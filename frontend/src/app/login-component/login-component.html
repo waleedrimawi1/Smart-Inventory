@@ -8,29 +8,40 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 </head>
 
 <body>
     <div class="login-page">
         <div class="title">SMART INVENTORY MANAGEMENT</div>
-        <img class="login-image" src="../../assets/shopping-cart.png">
+        <i class="fa-solid fa-warehouse"></i>
         <div class="login-prompt">Login</div>
         <div class="email-section">
             <img class="email-image" src="../../assets/username.png">
-            <input type="text" placeholder="EMAIL" class="email-field">
+            <input type="text" placeholder="EMAIL" class="email-field" [formControl]="email"
+                [ngStyle]="wrongCredentials ? {'border': '1px solid red'} : {}">
+                  @if(email.invalid && wrongCredentials){
+            <img class="wrong-image" src="../../assets/wrong.png">
+            }
         </div>
         <div class="password-section">
             <img class="password-image" src="../../assets/password.png">
-            <input type="password" placeholder="PASSWORD" class="password-field">
+            <input type="password" placeholder="PASSWORD" class="password-field" [formControl]="password"
+                [ngStyle]="wrongCredentials ? {'border': '1px solid red'} : {}">
+                  @if(wrongCredentials){
+            <img class="wrong-image" src="../../assets/wrong.png">
+            }
         </div>
-        <button class="login-button">LOGIN</button>
-     <div class = "graphic1">
+        <div class = "error-container">
+            <p class="error-message">{{ error }}</p>
+        </div>
+        <button class="login-button" (click)="login()">LOGIN</button>
+        <div class="graphic1">
             <img class="graphic1-image" src="../../assets/Graphic1.png">
         </div>
-        <div class = "graphic2">
+        <div class="graphic2">
             <img class="graphic2-image" src="../../assets/Graphic2.png">
-        </div> 
+        </div>
     </div>
 </body>
 
