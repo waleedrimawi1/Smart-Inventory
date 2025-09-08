@@ -46,6 +46,7 @@ export class LoginComponent {
           alert("Login successful");
         }
          else {
+          this.wrongPassword = true;
           this.error = 'Password is Wrong';
         }
       }

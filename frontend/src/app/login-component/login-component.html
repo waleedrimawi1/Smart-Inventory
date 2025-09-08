@@ -33,7 +33,7 @@
                 <img class="password-image" [src]="constants.ICONS.PASSWORD">
                 <input type="password" [placeholder]="constants.PLACEHOLDERS.PASSWORD" class="password-field"
                     [formControl]="password"
-                    [ngStyle]="(loggingIn && email.valid && !email.invalid && (password.invalid || wrongPassword)) ? {'border': '1px solid red'} : {}">
+                    [ngStyle]="(loggingIn && email.valid && (password.invalid || wrongPassword)) ? {'border': '1px solid red'} : {}">
 
                 @if(loggingIn && email.valid && (password.invalid || wrongPassword)) {
                 <img class="wrong-image" [src]="constants.ICONS.WRONG">
