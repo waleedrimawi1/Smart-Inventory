@@ -64,11 +64,12 @@ export class LoginComponent {
         else if (this.password.errors?.['required']) {
           this.error = 'Password is required';
         }
+      }
 
         // this.email.reset();
         // this.password.reset();
 
-      }
+      
     }
 
 

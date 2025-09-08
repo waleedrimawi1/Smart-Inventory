@@ -6,6 +6,7 @@
   border-radius: 12px;
   background: linear-gradient(135deg, #244BC5, #7281ae);
   z-index: 1;
+  height: auto;
 }
 
 .background{
