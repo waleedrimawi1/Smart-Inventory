@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LOGIN_CONSTANTS } from './login-component-constants';
-
-
+import { InventoryManagementService } from '../../InventoryManagementService/inventory-management-service';
 
 @Component({
   standalone: true,
@@ -14,9 +13,6 @@ import { LOGIN_CONSTANTS } from './login-component-constants';
 })
 export class LoginComponent {
   constants = LOGIN_CONSTANTS;
-
-  emailTest = "shahd@example.com";
-  passwordTest = "password123";
   emailExists = false;
   loggingIn = false;
   wrongPassword = false;
@@ -25,53 +21,58 @@ export class LoginComponent {
   email = new FormControl('', [Validators.required, Validators.email]);
   password = new FormControl('', [Validators.required]);
 
-  constructor() {
+  constructor(private inventoryManagementService: InventoryManagementService) {
     this.email.valueChanges.subscribe(() => {
       this.loggingIn = false;
-      this.emailExists = false;
+      this.emailExists = true;
+      this.error = '';
     });
 
     this.password.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.wrongPassword = false;
+      this.error = '';
     });
   }
 
   login() {
+    this.error = '';
     this.loggingIn = true;
+
     if (this.email.valid && this.password.valid) {
-      if (this.email.value === this.emailTest) {
-        this.emailExists = true;
-        if (this.password.value === this.passwordTest) {
-          alert("Login successful");
+      const credentials = {
+        email: this.email.value as string,
+        password: this.password.value as string,
+      };
+
+      this.inventoryManagementService.login(credentials).subscribe(
+        (response) => {
+          console.log('Login successful:', response);
+          //open dashboard
+
+        },
+        (error) => {
+          if (error.status === 400) {
+            console.log(error);
+            if (error.error.message === 'User not found') {
+              this.error = 'The email does not exist. Please check again.';
+              this.emailExists = false;
+            } else if (error.error.message === 'Invalid password') {
+              this.error = 'The password you entered is incorrect.';
+              this.wrongPassword = true;
+
+            }
+          }
         }
-         else {
-          this.wrongPassword = true;
-          this.error = 'Password is Wrong';
-        }
+      );
+    } else {
+      if (this.email.errors?.['required']) {
+        this.error = 'Email is required';
+      } else if (this.email.errors?.['email']) {
+        this.error = 'Invalid email format';
+      } else if (this.password.errors?.['required']) {
+        this.error = 'Password is required';
       }
-       else {
-          this.error = 'Email does not exist';
-       }
     }
-      else {
-        if (this.email.errors?.['required']) {
-          this.error = 'Email is required';
-        }
-        else if (this.email.errors?.['email']) {
-          this.error = 'Invalid email format';
-        }
-        else if (this.password.errors?.['required']) {
-          this.error = 'Password is required';
-        }
-      }
-
-        // this.email.reset();
-        // this.password.reset();
-
-      
-    }
-
-
-
   }
+}
