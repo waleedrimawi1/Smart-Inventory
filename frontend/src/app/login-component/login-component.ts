@@ -24,14 +24,14 @@ export class LoginComponent {
   constructor(private inventoryManagementService: InventoryManagementService) {
     this.email.valueChanges.subscribe(() => {
       this.loggingIn = false;
-      this.emailExists = true;
-      this.error = ''; 
+      this.emailExists = true;;
+      this.error = '';  
     });
 
     this.password.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.wrongPassword = false;
-      this.error = ''; 
+      this.error = '';  
     });
   }
 
@@ -59,6 +59,8 @@ export class LoginComponent {
               this.error = 'The password you entered is incorrect.';
               this.wrongPassword = true;
             }
+          } else {
+            this.error = 'An error occurred during login. Please try again later.';
           }
         }
       );
