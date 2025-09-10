@@ -13,7 +13,7 @@ import { InventoryManagementService } from '../../InventoryManagementService/inv
 })
 export class LoginComponent {
   constants = LOGIN_CONSTANTS;
-  emailExists = false;
+  emailExists = true;
   loggingIn = false;
   wrongPassword = false;
   error = '';
@@ -25,13 +25,13 @@ export class LoginComponent {
     this.email.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.emailExists = true;
-      this.error = '';
+      this.error = ''; 
     });
 
     this.password.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.wrongPassword = false;
-      this.error = '';
+      this.error = ''; 
     });
   }
 
@@ -48,19 +48,16 @@ export class LoginComponent {
       this.inventoryManagementService.login(credentials).subscribe(
         (response) => {
           console.log('Login successful:', response);
-          //open dashboard
-
         },
         (error) => {
+          console.error('Login failed:', error);
           if (error.status === 400) {
-            console.log(error);
             if (error.error.message === 'User not found') {
               this.error = 'The email does not exist. Please check again.';
               this.emailExists = false;
             } else if (error.error.message === 'Invalid password') {
               this.error = 'The password you entered is incorrect.';
               this.wrongPassword = true;
-
             }
           }
         }
