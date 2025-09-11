@@ -3,6 +3,8 @@ import { NgStyle } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LOGIN_CONSTANTS } from './login-component-constants';
 import { InventoryManagementService } from '../../InventoryManagementService/inventory-management-service';
+import { Router } from '@angular/router'; // Make sure Router is imported
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -21,7 +23,11 @@ export class LoginComponent {
   email = new FormControl('', [Validators.required, Validators.email]);
   password = new FormControl('', [Validators.required]);
 
-  constructor(private inventoryManagementService: InventoryManagementService) {
+  constructor(
+    private inventoryManagementService: InventoryManagementService,
+    private http: HttpClient,
+    private router: Router // Make sure Router is injected
+  ) {
     this.email.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.emailExists = true;;
@@ -48,6 +54,13 @@ export class LoginComponent {
       this.inventoryManagementService.login(credentials).subscribe(
         (response) => {
           console.log('Login successful:', response);
+          
+          // Save user data to localStorage
+          localStorage.setItem('user', JSON.stringify(response.user));
+          localStorage.setItem('authToken', response.token || 'basic-auth');
+          
+          // Navigate to dashboard
+          this.router.navigate(['/dashboard']);
         },
         (error) => {
           console.error('Login failed:', error);
