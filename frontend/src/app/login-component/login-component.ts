@@ -3,6 +3,8 @@ import { NgStyle } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LOGIN_CONSTANTS } from './login-component-constants';
 import { InventoryManagementService } from '../../InventoryManagementService/inventory-management-service';
+import { Router } from '@angular/router';
+
 
 @Component({
   standalone: true,
@@ -21,17 +23,20 @@ export class LoginComponent {
   email = new FormControl('', [Validators.required, Validators.email]);
   password = new FormControl('', [Validators.required]);
 
-  constructor(private inventoryManagementService: InventoryManagementService) {
+  constructor(
+    private inventoryManagementService: InventoryManagementService,
+    private router: Router
+  ) {
     this.email.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.emailExists = true;;
-      this.error = '';  
+      this.error = '';
     });
 
     this.password.valueChanges.subscribe(() => {
       this.loggingIn = false;
       this.wrongPassword = false;
-      this.error = '';  
+      this.error = '';
     });
   }
 
@@ -48,6 +53,12 @@ export class LoginComponent {
       this.inventoryManagementService.login(credentials).subscribe(
         (response) => {
           console.log('Login successful:', response);
+
+          localStorage.setItem('user', JSON.stringify(response));
+          localStorage.setItem('role', response.role);
+          localStorage.setItem('username', response.username);
+          
+          this.router.navigate(['/dashboard']);
         },
         (error) => {
           console.error('Login failed:', error);
