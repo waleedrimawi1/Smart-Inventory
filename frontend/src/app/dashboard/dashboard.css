@@ -1,183 +1,244 @@
 .dashboard {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .dashboard-header {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+  background-color: #3498db;
   color: white;
-  padding: 1rem 2rem;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-toggle {
+  background-color: white;
+  color: #3498db;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 15px;
+  cursor: pointer;
+  border-radius: 3px;
 }
 
 .header-left h1 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 20px;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
-}
-
-.user-info {
-  font-weight: 500;
-  background: rgba(255,255,255,0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  gap: 15px;
 }
 
 .logout-btn {
   background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 0.7rem 1.5rem;
-  border-radius: 25px;
+  padding: 8px 15px;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  border-radius: 3px;
 }
 
 .logout-btn:hover {
   background-color: #c0392b;
-  transform: translateY(-1px);
 }
 
-.dashboard-content {
-  flex: 1;
-  padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+.dashboard-body {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #34495e;
+  color: white;
   overflow-y: auto;
 }
 
-.dashboard-content h2 {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-size: 2rem;
-  font-weight: 700;
+.sidebar.collapsed {
+  width: 60px;
 }
 
-.dashboard-content p {
-  color: #7f8c8d;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
+.sidebar-content {
+  padding: 20px 0;
 }
 
-.dashboard-cards {
-  display: flex;               /* Use Flexbox */
-  flex-wrap: nowrap;           /* Prevent wrapping */
-  gap: 2rem;                  /* Add spacing between cards */
-  justify-content: flex-start; /* Align items to the left */
-  overflow-x: auto;            /* Allow horizontal scroll if needed */
+.sidebar-section {
+  margin-bottom: 25px;
 }
 
-.card {
-  background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+.section-title {
+  color: #bdc3c7;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin: 0 0 10px 15px;
+  font-weight: bold;
+}
+
+.sidebar.collapsed .section-title {
+  display: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  position: relative;
-  min-width: 280px;            /* Ensure each card has a minimum width */
-  flex: 0 0 auto;              /* Prevent shrinking or growing */
+  border-bottom: 1px solid #2c3e50;
+  transition: background-color 0.3s ease;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #3498db, #2980b9);
+.nav-item:hover {
+  background-color: #2c3e50;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-  border-color: #3498db;
+.nav-item.active {
+  background-color: #3498db;
+  border-left: 4px solid #2980b9;
 }
 
-.card-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+.nav-icon {
+  font-size: 16px;
+  margin-right: 10px;
+  width: 20px;
+}
+
+.nav-text {
+  font-size: 14px;
+}
+
+.sidebar.collapsed .nav-text {
+  display: none;
+}
+
+.main-content {
+  flex: 1;
+  background-color: #ecf0f1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Home View Styles */
+.home-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+}
+
+.welcome-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 40px;
   text-align: center;
+  max-width: 600px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.card h3 {
-  margin: 0 0 1rem 0;
+.welcome-card h1 {
   color: #2c3e50;
-  font-size: 1.3rem;
-  font-weight: 600;
-  text-align: center;
+  margin: 0 0 20px 0;
+  font-size: 28px;
 }
 
-.card p {
-  margin: 0;
+.role-info {
   color: #7f8c8d;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+.welcome-message {
+  color: #34495e;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.quick-stats {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ecf0f1;
+  padding-top: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7f8c8d;
+  font-size: 13px;
+}
+
+.stat-icon {
+  font-size: 16px;
+}
+
+/* Feature View Styles */
+.feature-view {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  margin: 20px 0;
+}
+
+.feature-view h2 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 22px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.feature-view p {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.coming-soon {
+  background-color: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 40px;
   text-align: center;
-  line-height: 1.5;
+  color: #95a5a6;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-/* Role-specific card styling */
-.manager-card::before {
-  background: linear-gradient(90deg, #e74c3c, #c0392b);
-}
-
-.manager-card:hover {
-  border-color: #e74c3c;
-}
-
-.admin-card::before {
-  background: linear-gradient(90deg, #f39c12, #e67e22);
-}
-
-.admin-card:hover {
-  border-color: #f39c12;
-}
-
-.agent-card::before {
-  background: linear-gradient(90deg, #27ae60, #229954);
-}
-
-.agent-card:hover {
-  border-color: #27ae60;
-}
-
-/* Responsive design */
+/* Responsive Design */
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+    gap: 10px;
   }
   
-  .dashboard-content {
-    padding: 1rem;
+  .sidebar {
+    width: 100%;
+    height: auto;
   }
-
-  /* Cards in single row with horizontal scroll on small screens */
-  .dashboard-cards {
-    flex-wrap: nowrap;
-    gap: 1rem;
+  
+  .dashboard-body {
+    flex-direction: column;
   }
-
-  .card {
-    min-width: 240px; /* Adjust card width for smaller screens */
+  
+  .welcome-card {
+    padding: 20px;
+    margin: 10px;
   }
-}
-
-@media (max-width: 480px) {
-  .card {
-    min-width: 200px; /* Further adjustment for very small screens */
+  
+  .quick-stats {
+    flex-direction: column;
+    gap: 10px;
   }
 }

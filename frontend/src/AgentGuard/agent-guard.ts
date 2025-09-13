@@ -1,16 +1,33 @@
-import { CanActivateFn } from '@angular/router';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../AuthService/auth-service';  
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { AuthService } from '../AuthService/auth-service';
 
-export const agentGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);  
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AgentGuard implements CanActivate {
 
-  if (authService.isLoggedIn() && authService.getRole() === 'AGENT') {
-    return true; 
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  canActivate(): boolean {
+    return this.activateAgent();
   }
 
-  router.navigate(['/unauthorized']);
-  return false;  
-};
+  // Method to check if current user is Agent
+  activateAgent(): boolean {
+    const userRole = this.authService.getRole();
+    if (userRole === 'AGENT') {
+      return true;
+    }
+    this.router.navigate(['/dashboard']);
+    return false;
+  }
+
+  // Method to check Agent permissions for UI visibility
+  static canAgentAccess(authService: AuthService): boolean {
+    return authService.getRole() === 'AGENT';
+  }
+}

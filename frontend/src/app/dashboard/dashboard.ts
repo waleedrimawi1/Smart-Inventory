@@ -1,20 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../AuthService/auth-service';
+import { AdminGuard } from '../../AdminGuard/admin-guard';
+import { ManagerGuard } from '../../ManagerGuard/manager-guard';
+import { AgentGuard } from '../../AgentGuard/agent-guard';
+import { PreordersComponent } from '../preorders/preorders';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PreordersComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
   user: any = {};
   role: string | null = null;
+  sidebarCollapsed = false;
+  currentView = 'home'; // Default view
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadUserInfo();
@@ -23,54 +32,46 @@ export class DashboardComponent implements OnInit {
   loadUserInfo() {
     this.user = this.authService.getUser();
     this.role = this.authService.getRole();
+  }
 
-    console.log('Dashboard loaded for user:', this.user);
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
   logout() {
     this.authService.logout();
-    
   }
 
-  // Navigation methods for Manager
-  navigateToSystemSettings() {
-    // Will implement after creating the component
-    console.log('Navigate to System Settings');
+  // Set current view instead of navigation
+  setCurrentView(view: string) {
+    this.currentView = view;
   }
 
-  navigateToInventoryManagement() {
-    console.log('Navigate to Inventory Management');
+  // Permission methods
+  canManagerAccess(): boolean {
+    return ManagerGuard.canManagerAccess(this.authService);
   }
 
-  navigateToReports() {
-    console.log('Navigate to Reports');
+  canAdminAccess(): boolean {
+    return AdminGuard.canAdminAccess(this.authService);
   }
 
-  // Navigation methods for Admin
-  navigateToPendingOrders() {
-    console.log('Navigate to Pending Orders');
+  canAgentAccess(): boolean {
+    return AgentGuard.canAgentAccess(this.authService);
   }
 
-  navigateToOrderApproval() {
-    console.log('Navigate to Order Approval');
+  // Helper methods for welcome page
+  getCurrentDate(): string {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
-  // Navigation methods for Agent
-  navigateToPreorders() {
-    console.log('Navigate to Preorders');
+  getLastLoginTime(): string {
+    // Mock data - replace with real last login time
+    return '2 hours ago';
   }
-
-  navigateToFinalOrders() {
-    console.log('Navigate to Final Orders');
-  }
-
-  navigateToPaymentCollection() {
-    console.log('Navigate to Payment Collection');
-  }
-
-   navigateToUserCreation() {
-    console.log('Navigate to User Creation');
-  }
-
-
 }

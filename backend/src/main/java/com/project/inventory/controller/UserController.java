@@ -2,7 +2,7 @@ package com.project.inventory.controller;
 
 import com.project.inventory.entity.RoleEnum;
 import com.project.inventory.entity.User;
-import com.project.inventory.service.UserService;
+import com.project.inventory.services.InventoryServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,9 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
     
-    private final UserService userService;
+    private final InventoryServiceImpl userService;
     
-    public UserController(UserService userService) {
+    public UserController(InventoryServiceImpl userService) {
         this.userService = userService;
     }
     
