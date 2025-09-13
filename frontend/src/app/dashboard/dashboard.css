@@ -71,9 +71,11 @@
 }
 
 .dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  display: flex;               /* Use Flexbox */
+  flex-wrap: nowrap;           /* Prevent wrapping */
+  gap: 2rem;                  /* Add spacing between cards */
+  justify-content: flex-start; /* Align items to the left */
+  overflow-x: auto;            /* Allow horizontal scroll if needed */
 }
 
 .card {
@@ -85,7 +87,8 @@
   transition: all 0.3s ease;
   border: 2px solid transparent;
   position: relative;
-  overflow: hidden;
+  min-width: 280px;            /* Ensure each card has a minimum width */
+  flex: 0 0 auto;              /* Prevent shrinking or growing */
 }
 
 .card::before {
@@ -161,8 +164,20 @@
   .dashboard-content {
     padding: 1rem;
   }
-  
+
+  /* Cards in single row with horizontal scroll on small screens */
   .dashboard-cards {
-    grid-template-columns: 1fr;
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
+
+  .card {
+    min-width: 240px; /* Adjust card width for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    min-width: 200px; /* Further adjustment for very small screens */
   }
 }

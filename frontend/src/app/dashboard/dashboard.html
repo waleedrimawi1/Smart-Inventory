@@ -12,57 +12,65 @@
 
   <!-- Role-Based Dashboard Content -->
   <div class="dashboard-content">
-    
     <!-- Manager Dashboard -->
-    <div *ngIf="role === 'MANAGER'" class="manager-dashboard">
+    @if(role === 'MANAGER'){
+    <div class="manager-dashboard">
       <h2>Manager Dashboard</h2>
-      <p>Welcome {{ user.fullName }}! You have full access to system settings, orders, reports, and inventory management.</p>
-      
+      <p>Welcome {{ user.fullName }}! You have full access to system settings, orders, reports, and inventory
+        management.</p>
+
       <div class="dashboard-cards">
         <div class="card manager-card" (click)="navigateToSystemSettings()">
           <div class="card-icon">⚙️</div>
           <h3>System Settings</h3>
           <p>Configure prices and system settings</p>
         </div>
-        
+
         <div class="card manager-card" (click)="navigateToInventoryManagement()">
           <div class="card-icon">📦</div>
           <h3>Inventory Management</h3>
           <p>Manage stock and quantities</p>
         </div>
-        
+
         <div class="card manager-card" (click)="navigateToReports()">
           <div class="card-icon">📊</div>
           <h3>Reports & Analytics</h3>
           <p>View system reports and analytics</p>
         </div>
-        
+
         <div class="card manager-card" (click)="navigateToPendingOrders()">
           <div class="card-icon">📋</div>
           <h3>Order Management</h3>
           <p>Manage all orders with priority</p>
         </div>
+
+        <div class="card manager-card" (click)="navigateToPendingOrders()">
+          <div class="card-icon">👤</div>
+          <h3>Add New User</h3>
+          <p>Create and manage new users</p>
+        </div>
       </div>
     </div>
-
+    }
     <!-- Admin Dashboard -->
-    <div *ngIf="role === 'ADMIN'" class="admin-dashboard">
+    @if(role === 'ADMIN'){
+    <div class="admin-dashboard">
       <h2>Admin Dashboard</h2>
       <p>Welcome {{ user.fullName }}! You can approve/reject orders, reschedule, and review payments.</p>
-      
+
       <div class="dashboard-cards">
         <div class="card admin-card" (click)="navigateToPendingOrders()">
           <div class="card-icon">⏳</div>
           <h3>Pending Orders</h3>
           <p>Review and approve pending orders</p>
         </div>
-        
+
         <div class="card admin-card" (click)="navigateToOrderApproval()">
           <div class="card-icon">✅</div>
           <h3>Order Approval</h3>
           <p>Modify quantities and approve orders</p>
         </div>
-        
+
         <div class="card admin-card" (click)="navigateToPaymentCollection()">
           <div class="card-icon">💰</div>
           <h3>Payment Review</h3>
@@ -70,25 +78,27 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Agent Dashboard -->
-    <div *ngIf="role === 'AGENT'" class="agent-dashboard">
+    @if(role === 'AGENT'){
+    <div class="agent-dashboard">
       <h2>Agent Dashboard</h2>
       <p>Welcome {{ user.fullName }}! Complete two rounds: first visit stores, then deliver orders.</p>
-      
+
       <div class="dashboard-cards">
         <div class="card agent-card" (click)="navigateToPreorders()">
           <div class="card-icon">📝</div>
           <h3>Create Preorders</h3>
           <p>First visit: Create initial orders from stores</p>
         </div>
-        
+
         <div class="card agent-card" (click)="navigateToFinalOrders()">
           <div class="card-icon">🚚</div>
           <h3>Deliver Final Orders</h3>
           <p>Second visit: Deliver approved orders</p>
         </div>
-        
+
         <div class="card agent-card" (click)="navigateToPaymentCollection()">
           <div class="card-icon">💳</div>
           <h3>Payment Collection</h3>
@@ -96,5 +106,6 @@
         </div>
       </div>
     </div>
+    }
   </div>
 </div>

@@ -54,11 +54,13 @@ export class LoginComponent {
         (response) => {
           console.log('Login successful:', response);
 
-          localStorage.setItem('user', JSON.stringify(response));
-          localStorage.setItem('role', response.role);
-          localStorage.setItem('username', response.username);
+          localStorage.setItem('user', JSON.stringify(response.user));
+          localStorage.setItem('role', response.user.role);
+          localStorage.setItem('username', response.user.fullName);
           
           this.router.navigate(['/dashboard']);
+
+
         },
         (error) => {
           console.error('Login failed:', error);

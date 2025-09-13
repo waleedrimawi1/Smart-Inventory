@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../../AuthService/auth-service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,13 +21,15 @@ export class DashboardComponent implements OnInit {
   }
 
   loadUserInfo() {
-    this.user = this.authService.getCurrentUser();
-    this.role = this.authService.getUserRole();
+    this.user = this.authService.getUser();
+    this.role = this.authService.getRole();
+
     console.log('Dashboard loaded for user:', this.user);
   }
 
   logout() {
     this.authService.logout();
+    
   }
 
   // Navigation methods for Manager
@@ -65,4 +67,10 @@ export class DashboardComponent implements OnInit {
   navigateToPaymentCollection() {
     console.log('Navigate to Payment Collection');
   }
+
+   navigateToUserCreation() {
+    console.log('Navigate to User Creation');
+  }
+
+
 }
