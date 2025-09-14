@@ -1,12 +1,12 @@
 export const LOGIN_CONSTANTS = {
   TITLE: 'SMART INVENTORY MANAGEMENT',
-  PROMPT: 'LOGIN TO YOUR ACCOUNT',
+  PROMPT: 'Login to your account',
   PLACEHOLDERS: {
-    EMAIL: 'EMAIL',
-    PASSWORD: 'PASSWORD',
+    EMAIL: 'Email',
+    PASSWORD: 'Password',
   },
   BUTTON: {
-    TEXT: 'LOGIN',
+    TEXT: 'Login',
   },
   ICONS: {
     EMAIL: '../../assets/username.png',
