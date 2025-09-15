@@ -18,6 +18,5 @@ export const routes: Routes = [
     component: PreordersComponent,
     canActivate: [authGuard, AgentGuard]
   },
-  // That's it! No other routes needed for now
   { path: '**', redirectTo: '/dashboard' }
 ];

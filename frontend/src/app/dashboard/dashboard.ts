@@ -71,7 +71,6 @@ export class DashboardComponent implements OnInit {
   }
 
   getLastLoginTime(): string {
-    // Mock data - replace with real last login time
     return '2 hours ago';
   }
 }
