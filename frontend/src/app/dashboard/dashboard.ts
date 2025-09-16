@@ -1,76 +1,121 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { AuthService } from '../../AuthService/auth-service';
-import { AdminGuard } from '../../AdminGuard/admin-guard';
-import { ManagerGuard } from '../../ManagerGuard/manager-guard';
-import { AgentGuard } from '../../AgentGuard/agent-guard';
-import { PreordersComponent } from '../preorders/preorders';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
+import { AuthService } from '../../AuthService/auth-service'
+
+
+
+interface Inventory {
+  name: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PreordersComponent],
+  imports: [MatTreeModule, MatButtonModule, MatIconModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
+  role: string = '';
   user: any = {};
-  role: string | null = null;
-  sidebarCollapsed = false;
-  currentView = 'home'; // Default view
+  dataSource: Inventory[] = [];
 
-  constructor(
-    public authService: AuthService,
-    private router: Router
-  ) {}
+  childrenAccessor = (node: Inventory) => [];
+
+  hasChild = (_: number, node: Inventory) => false;
+  constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
-    this.loadUserInfo();
-  }
-
-  loadUserInfo() {
-    this.user = this.authService.getUser();
     this.role = this.authService.getRole();
+    this.user = this.authService.getUser();
+    if (this.role === 'MANAGER') {
+      this.dataSource = ManagerSideBar;
+    } else if (this.role === 'ADMIN') {
+      this.dataSource = AdminSideBar;
+    } else if (this.role === 'AGENT') {
+      this.dataSource = AgentSideBar;
+    } else {
+      console.log('Role is undefined or invalid');
+
+    }
+
   }
 
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
 
-  logout() {
-    this.authService.logout();
-  }
 
-  // Set current view instead of navigation
-  setCurrentView(view: string) {
-    this.currentView = view;
-  }
-
-  // Permission methods
-  canManagerAccess(): boolean {
-    return ManagerGuard.canManagerAccess(this.authService);
-  }
-
-  canAdminAccess(): boolean {
-    return AdminGuard.canAdminAccess(this.authService);
-  }
-
-  canAgentAccess(): boolean {
-    return AgentGuard.canAgentAccess(this.authService);
-  }
-
-  // Helper methods for welcome page
-  getCurrentDate(): string {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  getLastLoginTime(): string {
-    return '2 hours ago';
+  onItemClick(itemName: string) {
+    switch (itemName) {
+      case 'Home':
+        this.router.navigate(['']);
+        break;
+      case 'Products':
+        this.router.navigate(['/products']);
+        break;
+      case 'Suppliers':
+        this.router.navigate(['/suppliers']);
+        break;
+      case 'Orders':
+        this.router.navigate(['/orders']);
+        break;
+      case 'Payments':
+        this.router.navigate(['/payments']);
+        break;
+      case 'Users':
+        this.router.navigate(['/users']);
+        break;
+      case 'Agent Visits':
+        this.router.navigate(['/agent-visits']);
+        break;
+      case 'Reports':
+        this.router.navigate(['/reports']);
+        break;
+      case 'Logout':
+        this.authService.logout();
+        break;
+      default:
+        break;
+    }
   }
 }
+
+const ManagerSideBar: Inventory[] = [
+  { "name": "Home" },
+  { "name": "Products" },
+  { "name": "Suppliers" },
+  { "name": "Customers" },
+  { "name": "Orders" },
+  { "name": "Payments" },
+  { "name": "Users" },
+  { "name": "Agent Visits" },
+  { "name": "Reports" },
+  { "name": "Logout" }
+];
+
+const AdminSideBar: Inventory[] = [
+  { "name": "Home" },
+  { "name": "Products" },
+  { "name": "Customers" },
+  { "name": "Orders" },
+  { "name": "Payments" },
+  { "name": "Users" },
+  { "name": "Agent Visits" },
+  { "name": "Reports" },
+  { "name": "Logout" }
+
+];
+
+const AgentSideBar: Inventory[] = [
+  { "name": "Home" },
+  { "name": "Products" },
+  { "name": "Orders" },
+  { "name": "Agent Visits" },
+  { "name": "Logout" }
+
+];
+
+
+
+

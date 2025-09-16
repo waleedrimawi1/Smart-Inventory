@@ -1,22 +1,39 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login-component/login-component';
 import { DashboardComponent } from './dashboard/dashboard';
-import { authGuard } from '../AuthGuard/auth-guard';
-import { PreordersComponent } from './preorders/preorders';
-import { AgentGuard } from '../AgentGuard/agent-guard';
+import { ProductComponent } from './product-component/product-component';
+import { Supplier } from './supplier/supplier';
+import { LoginComponent } from './login-component/login-component';
+import { AddUserComponent } from '../app/add-user/add-user';  
+import { authGuard } from '../AuthGuard/auth-guard';  
+import { ManagerGuard } from '../ManagerGuard/manager-guard';  
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { 
-    path: 'dashboard', 
+  {
+    path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [authGuard] 
+    canActivate: [authGuard], 
   },
   {
-    path: 'agent/preorders',
-    component: PreordersComponent,
-    canActivate: [authGuard, AgentGuard]
+    path: 'login',
+    component: LoginComponent,  
   },
-  { path: '**', redirectTo: '/dashboard' }
+  {
+    path: 'add-user',
+    component: AddUserComponent,
+    canActivate: [ManagerGuard],  
+  },
+  {
+    path: 'products',
+    component: ProductComponent,
+    canActivate: [ManagerGuard], 
+  },
+  {
+    path: 'suppliers',
+    component: Supplier,
+    canActivate: [ManagerGuard],
+  },
+  {
+    path: '**', 
+    redirectTo: '/unauthorized',  
+  }
 ];
