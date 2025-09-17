@@ -30,7 +30,7 @@ public class UserController {
     
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
-    public ResponseEntity<?> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.notFound().build());
@@ -75,7 +75,7 @@ public class UserController {
     
     @PutMapping("/{id}/role")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> updateUserRole(@PathVariable Integer id, 
+    public ResponseEntity<?> updateUserRole(@PathVariable Long id, 
                                           @RequestBody Map<String, String> request) {
         try {
             RoleEnum newRole = RoleEnum.valueOf(request.get("role").toUpperCase());
@@ -96,7 +96,7 @@ public class UserController {
     
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok(Map.of("message", "User deleted successfully"));

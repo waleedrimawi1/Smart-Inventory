@@ -9,6 +9,11 @@ import { ManagerGuard } from '../ManagerGuard/manager-guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard], 
@@ -34,6 +39,6 @@ export const routes: Routes = [
   },
   {
     path: '**', 
-    redirectTo: '/unauthorized',  
+    redirectTo: '/login',  
   }
 ];

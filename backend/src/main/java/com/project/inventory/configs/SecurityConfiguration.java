@@ -54,6 +54,9 @@ public class SecurityConfiguration {
                 // Public endpoints - anyone can access
                 .requestMatchers("/api/auth/login", "/api/auth/chickEmailExists").permitAll()
                 
+                // Supplier endpoints - allow public access for now
+                .requestMatchers("/api/suppliers/**").permitAll()
+                
                 // Protected endpoints - only MANAGER and ADMIN
                 .requestMatchers("/api/users/**").hasAnyRole("MANAGER", "ADMIN")
                 

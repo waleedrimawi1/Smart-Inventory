@@ -5,7 +5,6 @@ import com.project.inventory.entity.RoleEnum;
 import com.project.inventory.entity.User;
 import com.project.inventory.repository.RoleRepository;
 import com.project.inventory.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class InventoryServiceImpl implements InventoryService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Integer id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -101,7 +100,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 
 
-    public User updateUserRole(Integer userId, RoleEnum newRole) {
+    public User updateUserRole(Long userId, RoleEnum newRole) {
         // Business Logic: Only MANAGER can update roles
         if (!hasRole("MANAGER")) {
             throw new RuntimeException("Only MANAGER can update user roles");
@@ -118,7 +117,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
 
-    public void deleteUser(Integer userId) {
+    public void deleteUser(Long userId) {
         // Business Logic: Only MANAGER can delete users
         if (!hasRole("MANAGER")) {
             throw new RuntimeException("Only MANAGER can delete users");
