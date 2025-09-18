@@ -3,7 +3,7 @@ package com.project.inventory.controller;
 import com.project.inventory.entity.RoleEnum;
 import com.project.inventory.entity.User;
 import com.project.inventory.services.InventoryService;
-import com.project.inventory.services.InventoryService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +19,7 @@ public class UserController {
 
     public UserController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
+
     }
     @GetMapping
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")

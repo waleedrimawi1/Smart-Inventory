@@ -1,16 +1,36 @@
-import { CanActivateFn } from '@angular/router';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../AuthService/auth-service';  
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { AuthService } from '../AuthService/auth-service';
 
-export const managerGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);  
-  const router = inject(Router);  
+@Injectable({
+  providedIn: 'root'
+})
+export class ManagerGuard implements CanActivate {
 
-  if (authService.isLoggedIn() && authService.getRole() === 'MANAGER') {
-    return true;  
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  canActivate(): boolean {
+    return this.activateManager();
   }
 
-  router.navigate(['/unauthorized']);
-  return false;  
-};
+  // Method to check if current user is Manager
+  activateManager(): boolean {
+    const userRole = this.authService.getRole();
+    
+    if (userRole === 'MANAGER') {
+      return true;
+    }
+    
+    // Redirect non-manager users
+    this.router.navigate(['/dashboard']);
+    return false;
+  }
+
+  // Method to check Manager permissions for UI visibility
+  static canManagerAccess(authService: AuthService): boolean {
+    return authService.getRole() === 'MANAGER';
+  }
+}

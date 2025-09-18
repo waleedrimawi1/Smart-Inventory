@@ -1,27 +1,28 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard';
 import { LoginComponent } from './login-component/login-component';
-import { AddUserComponent } from '../app/add-user/add-user';  
 import { authGuard } from '../AuthGuard/auth-guard';  
 import { managerGuard } from '../ManagerGuard/manager-guard';  
+import { DashboardComponent } from './dashboard/dashboard';
+import { authGuard } from '../AuthGuard/auth-guard';
+import { PreordersComponent } from './preorders/preorders';
+import { AgentGuard } from '../AgentGuard/agent-guard';
 
 export const routes: Routes = [
-  {
-    path: 'dashboard',
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { 
+    path: 'dashboard', 
     component: DashboardComponent,
-    canActivate: [authGuard], 
+    canActivate: [authGuard] 
   },
   {
-    path: 'login',
-    component: LoginComponent,  
-  },
-  {
-    path: 'add-user',
-    component: AddUserComponent,
-    canActivate: [authGuard, managerGuard],  
+    path: 'agent/preorders',
+    component: PreordersComponent,
+    canActivate: [authGuard, AgentGuard]
   },
   {
     path: '**', 
     redirectTo: '/login',  
   }
+
 ];

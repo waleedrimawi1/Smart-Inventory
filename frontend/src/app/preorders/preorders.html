@@ -1,0 +1,113 @@
+<div class="preorders-content">
+  <!-- Customer Selection -->
+  <div class="section">
+    <h2>1. Select Customer</h2>
+    <div class="customers-grid">
+      <div 
+        class="customer-card" 
+        *ngFor="let customer of customers"
+        [class.selected]="selectedCustomer?.id === customer.id"
+        (click)="selectCustomer(customer)">
+        <div class="customer-icon">🏪</div>
+        <h3>{{ customer.name }}</h3>
+        <p>📍 {{ customer.address }}</p>
+        <p>📞 {{ customer.phone }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Selection -->
+  <div class="section" *ngIf="selectedCustomer">
+    <h2>2. Add Products</h2>
+    <div class="product-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Select Product:</label>
+          <select [(ngModel)]="selectedProductId" class="form-input">
+            <option value="0">Choose a product...</option>
+            <option *ngFor="let product of products" [value]="product.id">
+              {{ product.name }} - ${{ product.price }} (Stock: {{ product.stockQuantity }})
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Quantity:</label>
+          <input 
+            type="number" 
+            [(ngModel)]="selectedQuantity" 
+            min="1" 
+            [max]="getSelectedProduct()?.stockQuantity || 1"
+            class="form-input quantity-input">
+        </div>
+        
+        <button class="add-button" (click)="addToPreorder()">
+          Add Item
+        </button>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="order-items" *ngIf="preorderItems.length > 0">
+      <h3>Order Items:</h3>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of preorderItems; let i = index">
+            <td>{{ item.productName }}</td>
+            <td>${{ item.price }}</td>
+            <td>
+              <input 
+                type="number" 
+                [value]="item.quantity"
+                (change)="updateQuantity(i, +$any($event.target).value)"
+                min="1"
+                class="quantity-edit">
+            </td>
+            <td>${{ item.total.toFixed(2) }}</td>
+            <td>
+              <button class="remove-button" (click)="removeFromPreorder(i)">
+                Remove
+              </button>
+            </td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="3"><strong>Total Amount:</strong></td>
+            <td><strong>${{ totalAmount.toFixed(2) }}</strong></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Submit Order -->
+  <div class="section" *ngIf="selectedCustomer && preorderItems.length > 0">
+    <h2>3. Submit Order</h2>
+    <div class="order-summary">
+      <div class="summary-info">
+        <p><strong>Customer:</strong> {{ selectedCustomer.name }}</p>
+        <p><strong>Items Count:</strong> {{ preorderItems.length }} products</p>
+        <p><strong>Total Amount:</strong> ${{ totalAmount.toFixed(2) }}</p>
+        <p><strong>Status:</strong> Will be sent for approval</p>
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button class="clear-button" (click)="clearPreorder()">
+        Clear All
+      </button>
+      <button class="submit-button" (click)="submitPreorder()">
+        Submit Order
+      </button>
+    </div>
+  </div>
+</div>

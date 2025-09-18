@@ -1,7 +1,6 @@
 .dashboard-layout {
   display: flex;
   height: 100vh;
-}
 
 .tree-container {
   display: flex;
@@ -88,5 +87,6 @@ body {
   background-color: #f1f5ff;
   overflow: hidden;
 }
+
 
 
