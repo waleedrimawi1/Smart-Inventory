@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,10 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.hibernate.internal.CoreLogging.logger;
 
 @Component
 @RequiredArgsConstructor
@@ -37,52 +31,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // Step 1: Get the Authorization header from request
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
+        // Step 2: Check if Authorization header exists and starts with "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Step 3: Extract JWT token (remove "Bearer " prefix)
         jwt = authHeader.substring(7);
 
         try {
+            // Step 4: Extract username from JWT token
             userEmail = jwtService.extractUsername(jwt);
         } catch (Exception e) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Step 5: Check if user exists and is not already authenticated
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             try {
+                // Step 6: Load user details from database
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
+                // Step 7: Validate JWT token
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    // Extract roles from the token
-                    List<String> roles = jwtService.extractClaim(jwt, claims -> claims.get("roles", List.class));
 
-                    // Convert roles to GrantedAuthority
-                    List<GrantedAuthority> authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role))
-                            .collect(Collectors.toList());
-
-                    // Create Authentication token
+                    // Step 8: Create authentication token for Spring Security
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            authorities
+                            userDetails.getAuthorities()
                     );
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // Step 9: Add request details
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
+                    // Step 10: Tell Spring Security the user is authenticated
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                // Handle exception (invalid token or user not found)
+                // User not found or other error, continue without authentication
             }
         }
 
+        // Step 11: Continue to next filter or controller
         filterChain.doFilter(request, response);
     }
 }
