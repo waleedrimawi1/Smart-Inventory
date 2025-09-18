@@ -43,34 +43,34 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
-            // Step 1: Disable CSRF (not needed for JWT)
-            .csrf(AbstractHttpConfigurer::disable)
-            
-            // Step 2: Enable CORS for frontend
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // Step 3: Define which URLs need authentication
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints - anyone can access
-                .requestMatchers("/api/auth/login", "/api/auth/chickEmailExists").permitAll()
-                
-                // Protected endpoints - only MANAGER and ADMIN
-                .requestMatchers("/api/users/**").hasAnyRole("MANAGER", "ADMIN")
-                
-                // All other endpoints need authentication
-                .anyRequest().authenticated()
-            )
-            
-            // Step 4: No server sessions (stateless with JWT)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            // Step 5: Use our custom authentication provider
-            .authenticationProvider(authenticationProvider())
-            
-            // Step 6: Add our JWT filter before default authentication
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // Step 1: Disable CSRF (not needed for JWT)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // Step 2: Enable CORS for frontend
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Step 3: Define which URLs need authentication
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints - anyone can access
+                        .requestMatchers("/api/auth/login", "/api/auth/chickEmailExists").permitAll()
+
+                        // Protected endpoints - only MANAGER and ADMIN
+                        .requestMatchers("/api/users/**").hasAnyRole("MANAGER", "ADMIN")
+
+                        // All other endpoints need authentication
+                        .anyRequest().authenticated()
+                )
+
+                // Step 4: No server sessions (stateless with JWT)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // Step 5: Use our custom authentication provider
+                .authenticationProvider(authenticationProvider())
+
+                // Step 6: Add our JWT filter before default authentication
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -81,23 +81,23 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         // Allow requests from Angular frontend
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        
+
         // Allow all HTTP methods (GET, POST, PUT, DELETE)
         configuration.setAllowedMethods(List.of("*"));
-        
+
         // Allow all headers
         configuration.setAllowedHeaders(List.of("*"));
-        
+
         // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
-        
+
         // Apply to all URLs
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
+
         return source;
     }
 
@@ -117,16 +117,16 @@ public class SecurityConfiguration {
         return username -> {
             // Find user in database by email
             com.project.inventory.entity.User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-            
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
             // Convert our User entity to Spring Security UserDetails
             return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(Collections.singletonList(
-                    new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().name())
-                ))
-                .build();
+                    .username(user.getEmail())
+                    .password(user.getPassword())
+                    .authorities(Collections.singletonList(
+                            new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().name())
+                    ))
+                    .build();
         };
     }
 

@@ -20,7 +20,7 @@ public class JwtService {
     // Read from your application.properties
     @Value("${security.jwt.secret-key}")
     private String secretKey;
-    
+
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 

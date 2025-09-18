@@ -6,14 +6,14 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../AuthService/auth-service'
 
 
+
 interface Inventory {
   name: string;
-  children?: Inventory[];
 }
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true, 
+  standalone: true,
   imports: [MatTreeModule, MatButtonModule, MatIconModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
@@ -23,9 +23,9 @@ export class DashboardComponent {
   user: any = {};
   dataSource: Inventory[] = [];
 
-  childrenAccessor = (node: Inventory) => node.children ?? [];
+  childrenAccessor = (node: Inventory) => [];
 
-  hasChild = (_: number, node: Inventory) => !!node.children && node.children.length > 0;
+  hasChild = (_: number, node: Inventory) => false;
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
@@ -35,13 +35,13 @@ export class DashboardComponent {
       this.dataSource = ManagerSideBar;
     } else if (this.role === 'ADMIN') {
       this.dataSource = AdminSideBar;
-    }else if (this.role === 'AGENT') {
+    } else if (this.role === 'AGENT') {
       this.dataSource = AgentSideBar;
-    } else{
-       console.log('Role is undefined or invalid');
+    } else {
+      console.log('Role is undefined or invalid');
 
     }
-  
+
   }
 
 
@@ -71,6 +71,9 @@ export class DashboardComponent {
         break;
       case 'Reports':
         this.router.navigate(['/reports']);
+        break;
+      case 'Logout':
+        this.authService.logout();
         break;
       default:
         break;
@@ -107,38 +110,37 @@ export class DashboardComponent {
 
 const ManagerSideBar: Inventory[] = [
   { "name": "Home" },
-  {
-    "name": "Products",
-    "children": [
-      { "name": "Product List" },
-      { "name": "Add Product" }
-    ]
-  },
-  { "name": "Suppliers", "children": [{ "name": "Supplier List" }, { "name": "Add Supplier" }] },
-  { "name": "Customers", "children": [{ "name": "Customer List" }, { "name": "Add Customer" }] },
-  { "name": "Orders", "children": [{ "name": "Order List" }, { "name": "Add Order" }] },
-  { "name": "Payments", "children": [{ "name": "Payment History" }, { "name": "Payment Schedule" }] },
-  { "name": "Users", "children": [{ "name": "User Management" }, { "name": "Add User" }] },
-  { "name": "Agent Visits", "children": [{ "name": "Agent Visit Logs" }, { "name": "Schedule Agent Visit" }] },
-  { "name": "Reports", "children": [{ "name": "Sales Report" }, { "name": "Payment Summary" }] }
+  { "name": "Products" },
+  { "name": "Suppliers" },
+  { "name": "Customers" },
+  { "name": "Orders" },
+  { "name": "Payments" },
+  { "name": "Users" },
+  { "name": "Agent Visits" },
+  { "name": "Reports" },
+  { "name": "Logout" }
 ];
 
 const AdminSideBar: Inventory[] = [
   { "name": "Home" },
-  { "name": "Products", "children": [{ "name": "Product List" }, { "name": "Add Product" }] },
-  { "name": "Customers", "children": [{ "name": "Customer List" }] },
-  { "name": "Orders", "children": [{ "name": "Order List" }] },
-  { "name": "Payments", "children": [{ "name": "Payment History" }, { "name": "Payment Schedule" }] },
-  { "name": "Users", "children": [{ "name": "User Management" }] },
-  { "name": "Agent Visits", "children": [{ "name": "Agent Visit Logs" }, { "name": "Schedule Agent Visit" }] },
-  { "name": "Reports", "children": [{ "name": "Sales Report" }, { "name": "Payment Summary" }] }
+  { "name": "Products" },
+  { "name": "Customers" },
+  { "name": "Orders" },
+  { "name": "Payments" },
+  { "name": "Users" },
+  { "name": "Agent Visits" },
+  { "name": "Reports" },
+  { "name": "Logout" }
+
 ];
 
 const AgentSideBar: Inventory[] = [
   { "name": "Home" },
-  { "name": "Products", "children": [{ "name": "Product List" }] },
-  { "name": "Orders", "children": [{ "name": "Order List" }] },
-  { "name": "Agent Visits", "children": [{ "name": "Agent Visit Logs" }] }
+  { "name": "Products" },
+  { "name": "Orders" },
+  { "name": "Agent Visits" },
+  { "name": "Logout" }
+
 ];
 
 

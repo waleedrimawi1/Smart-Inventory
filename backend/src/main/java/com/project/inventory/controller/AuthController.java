@@ -35,38 +35,38 @@ public class AuthController {
         try {
             // Authenticate user
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getEmail(),
-                    loginRequest.getPassword()
-                )
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
             );
 
             // Load user details and generate token
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             String token = jwtService.generateToken(userDetails);
-            
+
             // Get user info
             User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Create response
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("user", Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "fullName", user.getFullName(),
-                "role", user.getRole().getName().name()
+                    "id", user.getId(),
+                    "email", user.getEmail(),
+                    "fullName", user.getFullName(),
+                    "role", user.getRole().getName().name()
             ));
 
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401)
-                .body(Map.of("error", "Invalid email or password"));
+                    .body(Map.of("error", "Invalid email or password"));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(Map.of("error", "Authentication failed"));
+                    .body(Map.of("error", "Authentication failed"));
         }
     }
 
