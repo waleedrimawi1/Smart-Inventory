@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login-component/login-component';
+import { authGuard } from '../AuthGuard/auth-guard';  
+import { managerGuard } from '../ManagerGuard/manager-guard';  
 import { DashboardComponent } from './dashboard/dashboard';
 import { authGuard } from '../AuthGuard/auth-guard';
 import { PreordersComponent } from './preorders/preorders';
@@ -18,5 +20,9 @@ export const routes: Routes = [
     component: PreordersComponent,
     canActivate: [authGuard, AgentGuard]
   },
-  { path: '**', redirectTo: '/dashboard' }
+  {
+    path: '**', 
+    redirectTo: '/login',  
+  }
+
 ];

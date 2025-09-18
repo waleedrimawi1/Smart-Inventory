@@ -1,216 +1,64 @@
-<div class="dashboard">
-  <!-- Header -->
-  <header class="dashboard-header">
-    <div class="header-left">
-      <button class="sidebar-toggle" (click)="toggleSidebar()">☰</button>
-      <h1>Inventory System</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="dashboard-layout">
+    <div class="tree-container">
+      <i class="fa-solid fa-warehouse"></i>
+      <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+          <button mat-icon-button disabled></button>
+          {{ node.name }}
+        </mat-tree-node>
+
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
+          [cdkTreeNodeTypeaheadLabel]="node.name">
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+          </button>
+          {{ node.name }}
+        </mat-tree-node>
+      </mat-tree>
     </div>
-    <div class="header-right">
-      <span class="user-info">{{ user.fullName }} - {{ role }}</span>
-      <button class="logout-btn" (click)="logout()">Logout</button>
-    </div>
-  </header>
-
-  <div class="dashboard-body">
-    <!-- Sidebar -->
-    <nav class="sidebar" [class.collapsed]="sidebarCollapsed">
-      <div class="sidebar-content">
-        
-        <!-- Manager Menu -->
-        <div *ngIf="canManagerAccess()">
-          <div class="sidebar-section">
-            <h3 class="section-title">Manager Menu</h3>
-            
-            <div class="nav-item" [class.active]="currentView === 'home'" (click)="setCurrentView('home')">
-              <div class="nav-icon">🏠</div>
-              <span class="nav-text">Home</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'settings'" (click)="setCurrentView('settings')">
-              <div class="nav-icon">⚙️</div>
-              <span class="nav-text">Settings</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'inventory'" (click)="setCurrentView('inventory')">
-              <div class="nav-icon">📦</div>
-              <span class="nav-text">Inventory</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'orders'" (click)="setCurrentView('orders')">
-              <div class="nav-icon">📋</div>
-              <span class="nav-text">Orders</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'reports'" (click)="setCurrentView('reports')">
-              <div class="nav-icon">📊</div>
-              <span class="nav-text">Reports</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Admin Menu -->
-        <div *ngIf="canAdminAccess()">
-          <div class="sidebar-section">
-            <h3 class="section-title">Admin Menu</h3>
-            
-            <div class="nav-item" [class.active]="currentView === 'home'" (click)="setCurrentView('home')">
-              <div class="nav-icon">🏠</div>
-              <span class="nav-text">Home</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'pending-orders'" (click)="setCurrentView('pending-orders')">
-              <div class="nav-icon">⏳</div>
-              <span class="nav-text">Pending Orders</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'order-approval'" (click)="setCurrentView('order-approval')">
-              <div class="nav-icon">✅</div>
-              <span class="nav-text">Approve Orders</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'payment-review'" (click)="setCurrentView('payment-review')">
-              <div class="nav-icon">💰</div>
-              <span class="nav-text">Payments</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Agent Menu -->
-        <div *ngIf="canAgentAccess()">
-          <div class="sidebar-section">
-            <h3 class="section-title">Agent Menu</h3>
-            
-            <div class="nav-item" [class.active]="currentView === 'home'" (click)="setCurrentView('home')">
-              <div class="nav-icon">🏠</div>
-              <span class="nav-text">Home</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'preorders'" (click)="setCurrentView('preorders')">
-              <div class="nav-icon">📝</div>
-              <span class="nav-text">New Order</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'final-orders'" (click)="setCurrentView('final-orders')">
-              <div class="nav-icon">🚚</div>
-              <span class="nav-text">Delivery</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'payment-collection'" (click)="setCurrentView('payment-collection')">
-              <div class="nav-icon">💳</div>
-              <span class="nav-text">Collect Money</span>
-            </div>
-            
-            <div class="nav-item" [class.active]="currentView === 'return-requests'" (click)="setCurrentView('return-requests')">
-              <div class="nav-icon">↩️</div>
-              <span class="nav-text">Returns</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </nav>
-
     <!-- Main Content Area -->
-    <main class="main-content">
-      
-      <!-- Home View (Default Welcome) -->
-      <div *ngIf="currentView === 'home'" class="home-view">
-        <div class="welcome-card">
-          <h1>Welcome {{ user.fullName }}! 👋</h1>
-          <p class="role-info">You are logged in as: <strong>{{ role }}</strong></p>
-          <div class="welcome-message">
-            <p *ngIf="canManagerAccess()">
-              As a Manager, you have full access to system settings, inventory management, order oversight, and comprehensive reports. 
-              Use the sidebar to navigate between different features.
-            </p>
-            <p *ngIf="canAdminAccess()">
-              As an Admin, you can review pending orders, approve or reject preorders, and manage payment reviews. 
-              Use the sidebar to access your administrative tools.
-            </p>
-            <p *ngIf="canAgentAccess()">
-              As an Agent, you can create new preorders, deliver final orders, collect payments, and submit return requests. 
-              Use the sidebar to start your daily tasks.
-            </p>
-          </div>
-          <div class="quick-stats">
-            <div class="stat-item">
-              <span class="stat-icon">📅</span>
-              <span class="stat-text">Today: {{ getCurrentDate() }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon">⏰</span>
-              <span class="stat-text">Last Login: {{ getLastLoginTime() }}</span>
-            </div>
-          </div>
-        </div>
+    <div class="content-area">
+      <div class="main-page">
+        @if(role === 'MANAGER'){
+        <h2>Manager Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You have full access to system settings, orders, reports, and inventory
+          management.</p>
+        }
+        @if(role === 'ADMIN'){
+        <h2>Admin Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You have access to system settings, user management, and reports.</p>
+
+        }
+        @if(role === 'AGENT'){
+        <h2>Agent Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You can manage orders and agent visit logs.</p>
+        }
+
       </div>
 
-      <!-- Preorders View (Agent) -->
-      <div *ngIf="currentView === 'preorders' && canAgentAccess()">
-        <app-preorders></app-preorders>
-      </div>
+    </div>
 
-      <!-- Placeholder Views for Other Features -->
-      <div *ngIf="currentView === 'settings' && canManagerAccess()" class="feature-view">
-        <h2>⚙️ System Settings</h2>
-        <p>Configure system settings, prices, and business rules.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
 
-      <div *ngIf="currentView === 'inventory' && canManagerAccess()" class="feature-view">
-        <h2>📦 Inventory Management</h2>
-        <p>Manage stock quantities and product information.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'orders' && canManagerAccess()" class="feature-view">
-        <h2>📋 Order Management</h2>
-        <p>Monitor all orders with priority management.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'reports' && canManagerAccess()" class="feature-view">
-        <h2>📊 Reports & Analytics</h2>
-        <p>View comprehensive system reports.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'pending-orders' && canAdminAccess()" class="feature-view">
-        <h2>⏳ Pending Orders</h2>
-        <p>Review and process pending preorders from agents.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'order-approval' && canAdminAccess()" class="feature-view">
-        <h2>✅ Order Approval</h2>
-        <p>Approve or reject orders, modify quantities before approval.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'payment-review' && canAdminAccess()" class="feature-view">
-        <h2>💰 Payment Review</h2>
-        <p>Review and approve payment collections from agents.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'final-orders' && canAgentAccess()" class="feature-view">
-        <h2>🚚 Final Orders & Delivery</h2>
-        <p>Deliver approved orders to customers on second visit.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'payment-collection' && canAgentAccess()" class="feature-view">
-        <h2>💳 Payment Collection</h2>
-        <p>Collect payments (full or partial) from customers.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-      <div *ngIf="currentView === 'return-requests' && canAgentAccess()" class="feature-view">
-        <h2>↩️ Return Requests</h2>
-        <p>Submit return requests for products with reasons.</p>
-        <div class="coming-soon">Coming Soon...</div>
-      </div>
-
-    </main>
   </div>
-</div>
+
+</body>
+
+</html>
