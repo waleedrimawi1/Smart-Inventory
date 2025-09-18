@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/auth/login", "/api/auth/chickEmailExists").permitAll()
 
                         // Protected endpoints - only MANAGER and ADMIN
-                        .requestMatchers("/api/users/**").hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers("/api/users/**","/api/products/**").hasAnyRole("MANAGER", "ADMIN")
 
                         // All other endpoints need authentication
                         .anyRequest().authenticated()

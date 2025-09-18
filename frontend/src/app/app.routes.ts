@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { ProductComponent } from './product-component/product-component';
 import { LoginComponent } from './login-component/login-component';
-import { authGuard } from '../AuthGuard/auth-guard';  
-import { managerGuard } from '../ManagerGuard/manager-guard';  
+import { ManagerGuard } from '../ManagerGuard/manager-guard';  
 import { DashboardComponent } from './dashboard/dashboard';
 import { authGuard } from '../AuthGuard/auth-guard';
 import { PreordersComponent } from './preorders/preorders';
@@ -23,9 +22,9 @@ export const routes: Routes = [
   {
     path: 'products',
     component: ProductComponent,
-    canActivate: [managerGuard],
+    canActivate: [ManagerGuard],
   },
-    path: 'agent/preorders',
+   { path: 'agent/preorders',
     component: PreordersComponent,
     canActivate: [authGuard, AgentGuard]
   },

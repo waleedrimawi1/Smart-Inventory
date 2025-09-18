@@ -57,21 +57,23 @@ export class LoginComponent {
           localStorage.setItem('user', JSON.stringify(response.user));
           localStorage.setItem('role', response.user.role);
           localStorage.setItem('username', response.user.fullName);
-          
+
           this.router.navigate(['/dashboard']);
 
 
         },
-        (error) => {
+        error => {
           console.error('Login failed:', error);
+
           if (error.status === 400) {
-            if (error.error.message === 'User not found') {
+            if (error.error.error === 'User not found') {
               this.error = 'The email does not exist. Please check again.';
               this.emailExists = false;
-            } else if (error.error.message === 'Invalid password') {
+            } else if (error.error.error === 'Invalid password') {
               this.error = 'The password you entered is incorrect.';
               this.wrongPassword = true;
             }
+  
           } else {
             this.error = 'An error occurred during login. Please try again later.';
           }

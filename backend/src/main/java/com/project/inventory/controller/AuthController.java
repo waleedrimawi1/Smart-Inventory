@@ -61,22 +61,20 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
 
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401)
-                    .body(Map.of("error", "Invalid email or password"));
+        }catch (BadCredentialsException e) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", "Invalid password"));
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("User not found")) {
+                return ResponseEntity.status(400)
+                        .body(Map.of("error", "User not found"));
+            }
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Authentication failed"));
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(Map.of("error", "Authentication failed"));
         }
     }
 
-    /**
-     * Check if email exists - for registration validation
-     */
-    @PostMapping("/chickEmailExists")
-    public ResponseEntity<Map<String, Boolean>> checkEmailExists(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        boolean exists = userRepository.existsByEmail(email);
-        return ResponseEntity.ok(Map.of("exists", exists));
-    }
 }

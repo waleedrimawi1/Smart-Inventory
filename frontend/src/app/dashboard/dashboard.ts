@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../AuthService/auth-service'
 
 
-
 interface Inventory {
   name: string;
 }
@@ -42,6 +41,7 @@ export class DashboardComponent {
 
     }
 
+  
   }
 
 
@@ -81,32 +81,14 @@ export class DashboardComponent {
 
   }
 
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
+
+
 
   logout() {
     this.authService.logout();
   }
-
-  // Set current view instead of navigation
-  setCurrentView(view: string) {
-    this.currentView = view;
-  }
-
-  // Permission methods
-  canManagerAccess(): boolean {
-    return ManagerGuard.canManagerAccess(this.authService);
-  }
-
-  canAdminAccess(): boolean {
-    return AdminGuard.canAdminAccess(this.authService);
-  }
-
-  canAgentAccess(): boolean {
-    return AgentGuard.canAgentAccess(this.authService);
-  }
 }
+
 
 const ManagerSideBar: Inventory[] = [
   { "name": "Home" },
@@ -142,20 +124,3 @@ const AgentSideBar: Inventory[] = [
   { "name": "Logout" }
 
 ];
-
-
-
-  // Helper methods for welcome page
-  getCurrentDate(): string {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  getLastLoginTime(): string {
-    return '2 hours ago';
-  }
-}
