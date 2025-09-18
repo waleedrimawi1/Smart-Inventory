@@ -29,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         createRoles();
         createDefaultAdmin();
+        createDefaultAgent();
     }
 
     private void createRoles() {
@@ -55,29 +56,44 @@ public class DataInitializer implements CommandLineRunner {
         // Create default manager user if it doesn't exist
         if (!userRepository.existsByEmail("manager@inventory.com")) {
             Role managerRole = roleRepository.findByName(RoleEnum.MANAGER).orElseThrow();
-            
+
             User manager = new User();
             manager.setFullName("System Manager");
             manager.setEmail("manager@inventory.com");
             manager.setPassword(passwordEncoder.encode("manager123"));
             manager.setPhone("1234567890");
             manager.setRole(managerRole);
-            
+
             userRepository.save(manager);
         }
-        
+
         // Create default admin user if it doesn't exist
         if (!userRepository.existsByEmail("admin@inventory.com")) {
             Role adminRole = roleRepository.findByName(RoleEnum.ADMIN).orElseThrow();
-            
+
             User admin = new User();
             admin.setFullName("System Administrator");
             admin.setEmail("admin@inventory.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setPhone("1234567890");
             admin.setRole(adminRole);
-            
+
             userRepository.save(admin);
+        }
+    }
+
+    private void createDefaultAgent() {
+        if (!userRepository.existsByEmail("agent@inventory.com")) {
+            Role agentRole = roleRepository.findByName(RoleEnum.AGENT).orElseThrow();
+
+            User agent = new User();
+            agent.setFullName("Inventory Agent");
+            agent.setEmail("agent@inventory.com");
+            agent.setPassword(passwordEncoder.encode("agent123"));
+            agent.setPhone("1234567890");
+            agent.setRole(agentRole);
+
+            userRepository.save(agent);
         }
     }
 }

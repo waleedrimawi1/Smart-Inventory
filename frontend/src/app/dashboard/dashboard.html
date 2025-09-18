@@ -9,7 +9,7 @@
   <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
       <button mat-icon-button disabled></button>
-      <span (click)="onItemClick(node.name)" style="cursor: pointer;">{{ node.name }}</span>
+      {{ node.name }}
     </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
@@ -23,3 +23,25 @@
     </mat-tree-node>
   </mat-tree>
 </div>
+
+<!-- Main Content Area -->
+<!-- <div class="content-area">
+      <div class="main-page">
+        @if(role === 'MANAGER'){
+        <h2>Manager Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You have full access to system settings, orders, reports, and inventory
+          management.</p>
+        }
+        @if(role === 'ADMIN'){
+        <h2>Admin Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You have access to system settings, user management, and reports.</p>
+
+        }
+        @if(role === 'AGENT'){
+        <h2>Agent Dashboard</h2>
+        <p>Welcome {{ user.fullName }}! You can manage orders and agent visit logs.</p>
+        }
+
+      </div>
+
+    </div> -->

@@ -46,6 +46,36 @@ mat-tree .mat-tree-node .mat-icon {
   transition: color 0.3s ease;
 }
 
+/* .content-area {
+  flex-grow: 1;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+} */
+
+/* .main-page{
+  display: block;
+  flex-direction: column;
+  align-items: center;  
+  justify-content: center;  
+  text-align: center;   
+  background-color: #f4f7ff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.main-page h2 {
+  font-size: 2rem;
+  color: #244BC5;
+}
+
+.main-page p {
+  font-size: 1.2rem;
+  color: #555;
+} */
+
 .tree-container, mat-tree, mat-tree .mat-tree-node {
   font-family: 'Montserrat', sans-serif;
   font-weight: bold;

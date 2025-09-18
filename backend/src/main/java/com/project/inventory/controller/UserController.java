@@ -2,7 +2,8 @@ package com.project.inventory.controller;
 
 import com.project.inventory.entity.RoleEnum;
 import com.project.inventory.entity.User;
-import com.project.inventory.services.InventoryServiceImpl;
+import com.project.inventory.services.InventoryService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,17 +15,16 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
-    
-    private final InventoryServiceImpl userService;
-    
-    public UserController(InventoryServiceImpl userService) {
-        this.userService = userService;
+    final InventoryService inventoryService;
+
+    public UserController(InventoryService inventoryService) {
+        this.inventoryService = inventoryService;
+
     }
-    
     @GetMapping
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+        List<User> users = inventoryService.getAllUsers();
         return ResponseEntity.ok(users);
     }
     
@@ -41,7 +41,7 @@ public class UserController {
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable String roleName) {
         try {
             RoleEnum roleEnum = RoleEnum.valueOf(roleName.toUpperCase());
-            List<User> users = userService.getUsersByRole(roleEnum);
+            List<User> users = inventoryService.getUsersByRole(roleEnum);
             return ResponseEntity.ok(users);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -59,7 +59,7 @@ public class UserController {
             RoleEnum roleEnum = RoleEnum.valueOf(request.get("role").toUpperCase());
             
             // Delegate to service
-            User user = userService.createUser(fullName, email, password, phone, roleEnum);
+            User user = inventoryService.createUser(fullName, email, password, phone, roleEnum);
             
             return ResponseEntity.ok(Map.of(
                 "message", "User created successfully",
@@ -79,7 +79,7 @@ public class UserController {
                                           @RequestBody Map<String, String> request) {
         try {
             RoleEnum newRole = RoleEnum.valueOf(request.get("role").toUpperCase());
-            User updatedUser = userService.updateUserRole(id, newRole);
+            User updatedUser = inventoryService.updateUserRole(id, newRole);
             
             return ResponseEntity.ok(Map.of(
                 "message", "User role updated successfully",
@@ -98,7 +98,7 @@ public class UserController {
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-            userService.deleteUser(id);
+            inventoryService.deleteUser(id);
             return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
             
         } catch (RuntimeException e) {
