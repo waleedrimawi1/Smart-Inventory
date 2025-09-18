@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add_business' }}</mat-icon>
+  {{ isEditMode ? 'Edit Product' : 'Add New Product' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="productForm" class="product-form">
+    <div class="form-group">
+      <label class="form-label">Product Name</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <input matInput formControlName="name" placeholder="Enter product name">
+        @if(productForm.get('name')?.hasError('required')){
+        <mat-error>
+          Product name is required
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <textarea matInput formControlName="description" placeholder="Enter product description" rows="3"></textarea>
+        @if(productForm.get('description')?.hasError('required')){
+        <mat-error>
+          Description is required
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Price</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <input matInput formControlName="price" placeholder="Enter product price" type="number">
+        @if(productForm.get('price')?.hasError('required')){
+        <mat-error>
+          Price is required
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Stock Quantity</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <input matInput formControlName="stockQuantity" placeholder="Enter stock quantity" type="number">
+        @if(productForm.get('stockQuantity')?.hasError('required')){
+        <mat-error>
+          Stock quantity is required
+        </mat-error>
+      }
+        @if(productForm.get('stockQuantity')?.hasError('min')){
+        <mat-error>
+          Stock quantity must be a positive number
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <input matInput formControlName="category" placeholder="Enter product category">
+        @if(productForm.get('category')?.hasError('required')){
+        <mat-error>
+          Category is required
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Supplier ID</label>
+      <mat-form-field appearance="outline" class="form-field">
+        <input matInput formControlName="supplierId" placeholder="Enter supplier ID">
+        @if(productForm.get('supplierId')?.hasError('required')){
+        <mat-error>
+          Supplier ID is required
+        </mat-error>
+      }
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!productForm.valid">
+    <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Update Product' : 'Add Product' }}
+  </button>
+</mat-dialog-actions>

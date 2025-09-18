@@ -1,6 +1,5 @@
 export const LOGIN_CONSTANTS = {
   TITLE: 'SMART INVENTORY MANAGEMENT',
-  PROMPT: 'Login to your account',
   PLACEHOLDERS: {
     EMAIL: 'Email',
     PASSWORD: 'Password',
