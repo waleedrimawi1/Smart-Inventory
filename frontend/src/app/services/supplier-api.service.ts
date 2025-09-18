@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -18,23 +18,38 @@ export class SupplierApiService {
 
   constructor(private http: HttpClient) {}
 
+  // Method to get the stored token
+  private getAuthToken(): string | null {
+    return localStorage.getItem('authToken'); // Replace with your token storage method
+  }
+
+  // Helper to add the Authorization header
+  private getHeaders(): HttpHeaders {
+    const token = this.getAuthToken();
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
+
   getAllSuppliers(): Observable<SupplierData[]> {
-    return this.http.get<SupplierData[]>(this.apiUrl)
+    return this.http.get<SupplierData[]>(this.apiUrl, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 
   createSupplier(supplier: any): Observable<SupplierData> {
-    return this.http.post<SupplierData>(this.apiUrl, supplier)
+    return this.http.post<SupplierData>(this.apiUrl, supplier, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 
   updateSupplier(id: number, supplier: any): Observable<SupplierData> {
-    return this.http.put<SupplierData>(`${this.apiUrl}/${id}`, supplier)
+    return this.http.put<SupplierData>(`${this.apiUrl}/${id}`, supplier, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 
   deleteSupplier(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 

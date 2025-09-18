@@ -1,4 +1,9 @@
 
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+}
+
 .tree-container {
   display: flex;
   flex-direction: column;

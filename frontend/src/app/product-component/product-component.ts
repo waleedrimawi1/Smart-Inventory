@@ -1,62 +1,173 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, ReplaySubject } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from '../dashboard/dashboard';
+import { AddProductDialogComponent } from './add-product-dialog/add-product-dialog';
+import { InventoryManagementService } from '../../InventoryManagementService/inventory-management-service';
+import { Product } from '../../models';
 
-export interface Product {
-  productId: number;
-  name: string;
-  description: string;
-  price: number;
-  stockQuantity: number;
-  category: string;
-  supplierId: number;
-
-}
-
-const products: Product[] = [
-  { productId: 1, name: 'Product 1', description: 'Description 1', price: 10, stockQuantity: 100, category: 'Category 1', supplierId: 1 },
-  { productId: 2, name: 'Product 2', description: 'Description 2', price: 20, stockQuantity: 200, category: 'Category 2', supplierId: 2 },
-  { productId: 3, name: 'Product 3', description: 'Description 3', price: 30, stockQuantity: 300, category: 'Category 3', supplierId: 3 },
-  { productId: 4, name: 'Product 4', description: 'Description 4', price: 40, stockQuantity: 400, category: 'Category 4', supplierId: 4 },
-];
 
 @Component({
   standalone: true,
   selector: 'app-product-component',
-  imports: [MatButtonModule, MatTableModule,DashboardComponent],
+  imports: [CommonModule,
+    MatButtonModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatTooltipModule,
+    FormsModule,
+    DashboardComponent],
   templateUrl: './product-component.html',
   styleUrls: ['./product-component.css']
 })
 export class ProductComponent {
-  displayedColumns: string[] = ['productId', 'name', 'description', 'price', 'stockQuantity', 'category', 'supplierId',  'update', 'delete'];
-  dataToDisplay = [...products];
+  displayedColumns: string[] = ['productId', 'name', 'description', 'price', 'stockQuantity', 'category', 'supplierId', 'actions'];
+  products: Product[] = [];
+  allProducts: Product[] = [];
+  dataToDisplay: Product[] = [];
   dataSource = new ExampleDataSource(this.dataToDisplay);
+  searchTerm: string = '';
+  constructor(public dialog: MatDialog,
+    private inventoryManagementService: InventoryManagementService) { }
 
-  addData() {
-    const randomElementIndex = Math.floor(Math.random() * products.length);
-    this.dataToDisplay = [...this.dataToDisplay, products[randomElementIndex]];
-    this.dataSource.setData(this.dataToDisplay);
+  ngOnInit() {
+    this.fetchProducts();
   }
 
-  removeData() {
-    this.dataToDisplay = this.dataToDisplay.slice(0, -1);
-    this.dataSource.setData(this.dataToDisplay);
+  applyFilter() {
+    this.dataToDisplay = this.inventoryManagementService.searchProducts(this.searchTerm, this.allProducts);
+    this.dataSource.setData(this.dataToDisplay);  
+  }
+
+
+  openAddProductDialog() {
+    const dialogRef = this.dialog.open(AddProductDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: {}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const newProduct: Product = {
+          name: result.name,
+          description: result.description,
+          price: result.price,
+          stockQuantity: result.stockQuantity,
+          category: result.category,
+          supplierId: result.supplierId
+        };
+        this.inventoryManagementService.addProduct(newProduct).subscribe(
+          (response) => {
+            console.log('Product added successfully:', response);
+            this.allProducts.push(response);
+            this.dataToDisplay = [...this.allProducts];
+            this.dataSource.setData(this.allProducts);
+            this.applyFilter(); // Reapply current filter
+          },
+          (error) => {
+            console.error('Failed to add product:', error);
+            if (error.status === 400) {
+              if (error.error === 'Supplier not found') {
+                alert('The supplier ID does not exist. Please check again. could not add product.');
+              }
+
+            }
+
+          });
+      }
+    });
   }
 
 
 
-  onUpdate(element: any): void {
-    console.log('Action clicked for update:', element);
-  }
+  editProduct(product: Product) {
+  const dialogRef = this.dialog.open(AddProductDialogComponent, {
+    width: '600px',
+    maxWidth: '90vw',
+    data: { product: product, isEdit: true },
+  });
 
-  onDelete(element: any): void {
-    console.log('Action clicked for delete:', element);
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      const updatedProduct: Product = { ...product, ...result }; 
+
+      this.inventoryManagementService.updateProduct(updatedProduct).subscribe(
+        (response) => {
+          console.log('Product updated successfully:', response);
+
+          const index = this.allProducts.findIndex(s => s.productId === product.productId);
+          if (index !== -1) {
+            this.allProducts[index] = updatedProduct; 
+            this.dataToDisplay = [...this.allProducts]; 
+            this.dataSource.setData(this.allProducts);
+            this.applyFilter(); 
+          }
+        },
+        (error) => {
+          console.error('Failed to update product:', error);
+          if (error.status === 400) {
+            if (error.error === 'Supplier not found') {
+              alert('The supplier ID does not exist. Please check again. could not update product.');
+            }
+          }
+        }
+      );
+    }
+  });
 }
 
+
+
+  deleteProduct(product: Product) {
+    if (product.productId === undefined) {
+      console.error('Cannot delete product: productId is undefined.');
+      return;
+    }
+    if (confirm(`Are you sure you want to delete ${product.name}?`)) {
+      this.inventoryManagementService.deleteProduct(product.productId).subscribe(
+        () => {
+          this.allProducts = this.allProducts.filter(s => s.productId !== product.productId);
+          console.log('Product deleted successfully');
+
+          this.dataToDisplay = [...this.allProducts];
+          this.dataSource.setData(this.dataToDisplay);
+          this.applyFilter(); // Reapply current filter
+        },
+        (error) => {
+          console.error('Failed to delete product:', error);
+        }
+      );
+    }
+  }
+
+
+
+  fetchProducts() {
+    this.inventoryManagementService.getProducts().subscribe(
+      (response) => {
+        console.log('Products fetched successfully:', response);
+        this.products = response;
+        this.allProducts = [...this.products];
+        this.dataToDisplay = [...this.products];
+        this.dataSource.setData(this.dataToDisplay);
+      },
+      (error) => {
+        console.error('Failed to fetch products:', error);
+      }
+    );
+  }
+}
 
 
 
@@ -72,7 +183,8 @@ class ExampleDataSource extends DataSource<Product> {
     return this._dataStream;
   }
 
-  disconnect() {}
+
+  disconnect() { }
 
   setData(data: Product[]) {
     this._dataStream.next(data);

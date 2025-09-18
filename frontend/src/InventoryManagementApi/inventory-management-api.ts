@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Product } from '../models';
+import { tap } from 'rxjs/operators';  
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +10,59 @@ import { Observable } from 'rxjs';
 export class InventoryManagementApi {
     constructor(private http: HttpClient) { }
 
-
 login(credentials: { email: string; password: string }) {
-  return this.http.post<any>('http://localhost:3020/api/auth/login', credentials, { withCredentials: true });
- 
+  return this.http.post<any>('http://localhost:3020/api/auth/login', credentials).pipe(
+    tap((response) => {
+      if (response.token) {
+        localStorage.setItem('authToken', response.token);
+        console.log('Token stored in localStorage,response.token:', response.token);
+        
+      }
+    })
+  );
 }
+
+
+
+
+getProducts(): Observable<Product[]> {
+  const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`  // Include the token in the Authorization header
+  });
+
+  return this.http.get<Product[]>('http://localhost:3020/api/products', { headers });
+}
+
+
+addProduct(product: Product): Observable<Product> {
+   const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`  // Include the token in the Authorization header
+  });
+
+  return this.http.post<Product>('http://localhost:3020/api/products/addProduct', product, { headers });
+
+}
+
+deleteProduct(productId: number): Observable<void> {
+   const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`  // Include the token in the Authorization header
+  });
+
+  return this.http.delete<void>(`http://localhost:3020/api/products/deleteProduct/${productId}`, { headers });
+}
+
+updateProduct(product : Product): Observable<any> {
+   const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`  // Include the token in the Authorization header
+  });
+
+  return this.http.put<any>(`http://localhost:3020/api/products/updateProduct`, product, { headers });
+
+}
+
+
 }

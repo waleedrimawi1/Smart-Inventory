@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Step 3: Extract JWT token (remove "Bearer " prefix)
         jwt = authHeader.substring(7);
-        
+
         try {
             // Step 4: Extract username from JWT token
             userEmail = jwtService.extractUsername(jwt);
@@ -55,26 +55,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Step 5: Check if user exists and is not already authenticated
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            
+
             try {
                 // Step 6: Load user details from database
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                
+
                 // Step 7: Validate JWT token
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    
+
                     // Step 8: Create authentication token for Spring Security
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
-                    
+
                     // Step 9: Add request details
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
-                    
+
                     // Step 10: Tell Spring Security the user is authenticated
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // User not found or other error, continue without authentication
             }
         }
-        
+
         // Step 11: Continue to next filter or controller
         filterChain.doFilter(request, response);
     }

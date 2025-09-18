@@ -42,6 +42,7 @@ export class DashboardComponent {
 
     }
 
+
   }
 
 
@@ -78,8 +79,17 @@ export class DashboardComponent {
       default:
         break;
     }
+
+  }
+
+
+
+
+  logout() {
+    this.authService.logout();
   }
 }
+
 
 const ManagerSideBar: Inventory[] = [
   { "name": "Home" },
@@ -115,7 +125,3 @@ const AgentSideBar: Inventory[] = [
   { "name": "Logout" }
 
 ];
-
-
-
-

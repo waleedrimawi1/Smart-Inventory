@@ -35,48 +35,46 @@ public class AuthController {
         try {
             // Authenticate user
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getEmail(),
-                    loginRequest.getPassword()
-                )
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
             );
 
             // Load user details and generate token
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             String token = jwtService.generateToken(userDetails);
-            
+
             // Get user info
             User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Create response
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("user", Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "fullName", user.getFullName(),
-                "role", user.getRole().getName().name()
+                    "id", user.getId(),
+                    "email", user.getEmail(),
+                    "fullName", user.getFullName(),
+                    "role", user.getRole().getName().name()
             ));
 
             return ResponseEntity.ok(response);
 
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401)
-                .body(Map.of("error", "Invalid email or password"));
+        }catch (BadCredentialsException e) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", "Invalid password"));
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("User not found")) {
+                return ResponseEntity.status(400)
+                        .body(Map.of("error", "User not found"));
+            }
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Authentication failed"));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(Map.of("error", "Authentication failed"));
+                    .body(Map.of("error", "Authentication failed"));
         }
     }
 
-    /**
-     * Check if email exists - for registration validation
-     */
-    @PostMapping("/chickEmailExists")
-    public ResponseEntity<Map<String, Boolean>> checkEmailExists(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        boolean exists = userRepository.existsByEmail(email);
-        return ResponseEntity.ok(Map.of("exists", exists));
-    }
 }

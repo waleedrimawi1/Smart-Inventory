@@ -43,37 +43,34 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
-            // Step 1: Disable CSRF (not needed for JWT)
-            .csrf(AbstractHttpConfigurer::disable)
-            
-            // Step 2: Enable CORS for frontend
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // Step 3: Define which URLs need authentication
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints - anyone can access
-                .requestMatchers("/api/auth/login", "/api/auth/chickEmailExists").permitAll()
-                
-                // Supplier endpoints - allow public access for now
-                .requestMatchers("/api/suppliers/**").permitAll()
-                
-                // Protected endpoints - only MANAGER and ADMIN
-                .requestMatchers("/api/users/**").hasAnyRole("MANAGER", "ADMIN")
-                
-                // All other endpoints need authentication
-                .anyRequest().authenticated()
-            )
-            
-            // Step 4: No server sessions (stateless with JWT)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            // Step 5: Use our custom authentication provider
-            .authenticationProvider(authenticationProvider())
-            
-            // Step 6: Add our JWT filter before default authentication
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // Step 1: Disable CSRF (not needed for JWT)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // Step 2: Enable CORS for frontend
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Step 3: Define which URLs need authentication
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints - anyone can access
+                        .requestMatchers("/api/auth/login").permitAll()
+
+                        // Protected endpoints - only MANAGER and ADMIN
+                        .requestMatchers("/api/users/**","/api/products/**","/api/suppliers/**").hasAnyRole("MANAGER", "ADMIN")
+
+                        // All other endpoints need authentication
+                        .anyRequest().authenticated()
+                )
+
+                // Step 4: No server sessions (stateless with JWT)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // Step 5: Use our custom authentication provider
+                .authenticationProvider(authenticationProvider())
+
+                // Step 6: Add our JWT filter before default authentication
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
