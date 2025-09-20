@@ -1,0 +1,57 @@
+.supplier-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 500px;
+  max-width: 550px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.form-field .mat-mdc-form-field-label {
+  display: none !important;
+}
+
+.form-field .mat-mdc-form-field-label-wrapper {
+  padding-top: 0 !important;
+}
+
+.form-field .mat-mdc-text-field-wrapper {
+  padding-top: 0;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #244BC5;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 16px 24px 0 24px;
+}
+
+mat-dialog-content {
+  padding: 16px 24px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 8px;
+}
