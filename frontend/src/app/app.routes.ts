@@ -9,6 +9,8 @@ import { LoginComponent } from './login-component/login-component';
 import { authGuard } from '../AuthGuard/auth-guard';  
 import { PreordersComponent } from '../app/preorders/preorders';
 import { AgentGuard } from '../AgentGuard/agent-guard';
+import { AdminGuard } from '../AdminGuard/admin-guard';
+import { UserManagementComponent } from './user-management/user-management';
 
 export const routes: Routes = [
   {
@@ -42,6 +44,11 @@ export const routes: Routes = [
    { path: 'agent/preorders',
     component: PreordersComponent,
     canActivate: [authGuard, AgentGuard]
+  },
+  {
+    path: 'users',
+    component: UserManagementComponent,
+    canActivate: [ManagerGuard],
   },
   {
     path: '**', 
