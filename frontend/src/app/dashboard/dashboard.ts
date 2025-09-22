@@ -58,6 +58,9 @@ export class DashboardComponent {
       case 'Suppliers':
         this.router.navigate(['/suppliers']);
         break;
+      case 'Customers':
+        this.router.navigate(['/customers']);
+        break;
       case 'Orders':
         this.router.navigate(['/orders']);
         break;
