@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from '../dashboard/dashboard';
 import { AddCustomerDialogComponent } from './add-customer-dialog/add-customer-dialog';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/confirm-dialog.component';
 import { CustomerApiService, CustomerData } from '../services/customer-api.service';
 
 @Component({

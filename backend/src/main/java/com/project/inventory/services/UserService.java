@@ -65,19 +65,29 @@ public class UserService {
 
 
 
-    public User updateUserRole(Long userId, RoleEnum newRole) {
-        // Business Logic: Only MANAGER can update roles
+    public User updateUser(Long userId, String fullName, String email, String phone, RoleEnum roleEnum) {
+        // Business Logic: Only MANAGER or ADMIN can update users
         if (!hasRole("MANAGER")) {
-            throw new RuntimeException("Only MANAGER can update user roles");
+            throw new RuntimeException("Only MANAGER can update users");
         }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Role role = roleRepository.findByName(newRole)
-                .orElseThrow(() -> new RuntimeException("Role not found: " + newRole));
+        // Check if email is being changed and if it already exists for another user
+        if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
 
+        Role role = roleRepository.findByName(roleEnum)
+                .orElseThrow(() -> new RuntimeException("Role not found: " + roleEnum));
+
+        // Update user fields
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
         user.setRole(role);
+
         return userRepository.save(user);
     }
 
