@@ -9,7 +9,7 @@ import { AddUserComponent } from '../app/add-user/add-user';
 import { authGuard } from '../AuthGuard/auth-guard';  
 import { PreordersComponent } from '../app/preorders/preorders';
 import { AgentGuard } from '../AgentGuard/agent-guard';
-
+import { OrderComponent } from '../app/order-component/order-component' // Adjust the import path if needed
 export const routes: Routes = [
   {
     path: '',
@@ -34,10 +34,11 @@ export const routes: Routes = [
     component: Supplier,
     canActivate: [ManagerGuard],
   },
-   { path: 'agent/preorders',
-    component: PreordersComponent,
-    canActivate: [authGuard, AgentGuard]
+   {path: 'orders',
+    component: OrderComponent,
+    canActivate: [ManagerGuard]
   },
+  
   {
     path: '**', 
     redirectTo: '/unauthorized',  

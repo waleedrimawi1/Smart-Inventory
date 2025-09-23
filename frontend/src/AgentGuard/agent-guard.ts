@@ -22,7 +22,6 @@ export class AgentGuard implements CanActivate {
     if (userRole === 'AGENT') {
       return true;
     }
-    this.router.navigate(['/dashboard']);
     return false;
   }
 

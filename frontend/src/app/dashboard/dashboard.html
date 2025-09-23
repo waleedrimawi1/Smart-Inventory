@@ -6,11 +6,11 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 <div class="tree-container">
   <i class="fa-solid fa-warehouse"></i>
-  <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-      <button mat-icon-button disabled></button>
-      <span (click)="onItemClick(node.name)" style="cursor:pointer;">{{ node.name }}</span>
-    </mat-tree-node>
+ <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+    <span (click)="onItemClick(node.name)" style="cursor:pointer;">{{ node.name }}</span>
+  </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
       [cdkTreeNodeTypeaheadLabel]="node.name">
