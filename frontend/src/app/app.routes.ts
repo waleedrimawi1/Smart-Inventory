@@ -11,6 +11,8 @@ import { PreordersComponent } from '../app/preorders/preorders';
 import { AgentGuard } from '../AgentGuard/agent-guard';
 import { AdminGuard } from '../AdminGuard/admin-guard';
 import { UserManagementComponent } from './user-management/user-management';
+import { O } from '@angular/cdk/keycodes';
+import { OrderComponent } from './order-component/order-component';
 
 export const routes: Routes = [
   {
@@ -41,9 +43,9 @@ export const routes: Routes = [
     component: CustomerComponent,
     canActivate: [ManagerGuard],
   },
-   { path: 'agent/preorders',
-    component: PreordersComponent,
-    canActivate: [authGuard, AgentGuard]
+   { path: 'orders',
+    component: OrderComponent,
+    canActivate: [ManagerGuard]
   },
   
   {
