@@ -16,8 +16,10 @@ import { ConfirmDialogComponent } from '../supplier/confirm-dialog/confirm-dialo
 import { OrderItemDialogComponent } from './orderItem-dialog/orderItem-dialog';
 import { CdkTableModule } from '@angular/cdk/table';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { Product,Order,OrderItem,Customer,User} from '../../models';
+import { Product, Order, OrderItem, Customer, User } from '../../models';
 import { InventoryManagementService } from '../../InventoryManagementService/inventory-management-service';
+import { switchMap } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -56,16 +58,16 @@ import { InventoryManagementService } from '../../InventoryManagementService/inv
 export class OrderComponent {
 
   columnsToDisplay: string[] = ['orderId', 'customerId', 'agentId', 'orderDate', 'deliveryDate', 'status', 'orderType'];
-  columnsToDisplayWithExpand = [...this.columnsToDisplay,'totalAmount', 'approve', 'actions'];
+  columnsToDisplayWithExpand = [...this.columnsToDisplay, 'totalAmount', 'approve', 'actions'];
   columnLabels: { [key: string]: string } = {
-  orderId: 'Order ID',
-  customerId: 'Customer ID',
-  agentId: 'Agent ID',
-  orderDate: 'Order Date',
-  deliveryDate: 'Delivery Date',
-  status: 'Status',
-  orderType: 'Order Type',
-};
+    orderId: 'Order ID',
+    customerId: 'Customer ID',
+    agentId: 'Agent ID',
+    orderDate: 'Order Date',
+    deliveryDate: 'Delivery Date',
+    status: 'Status',
+    orderType: 'Order Type',
+  };
   product: Product[] = [];
   expandedElement: Order | null = null;
   orderItemDisplayedColumns: string[] = ['orderItem_id', 'product_id', 'quantity', 'unit_price', 'total_price', 'actions'];
@@ -80,23 +82,23 @@ export class OrderComponent {
   customers: Customer[] = [
     { customerId: 4, name: 'Customer A', phone: '123-456-7890', address: '123 Main St' },
     { customerId: 5, name: 'Customer B', phone: '987-654-3210', address: '456 Elm St' },
-    { customerId: 6, name: 'Customer C', phone: '555-555-5555', address: '789 Oak St' } 
+    { customerId: 6, name: 'Customer C', phone: '555-555-5555', address: '789 Oak St' }
   ];
 
   agents: User[] = [
-  { id: 5, fullName: 'Agent X', email: 'agentX@example.com', password: 'secret', phone: '123-456-7890', roleId: 3 },
-  { id: 6, fullName: 'Agent Y', email: 'agentY@example.com', password: 'secret', phone: '234-567-8901', roleId: 3 },
-  { id: 7, fullName: 'Agent Z', email: 'agentZ@example.com', password: 'secret', phone: '345-678-9012', roleId: 3 },
-  { id: 8, fullName: 'Agent W', email: 'agentW@example.com', password: 'secret', phone: '456-789-0123', roleId: 3 },
-  { id: 9, fullName: 'Agent V', email: 'agentV@example.com', password: 'secret', phone: '567-890-1234', roleId: 3 }
-];
+    { id: 5, fullName: 'Agent X', email: 'agentX@example.com', password: 'secret', phone: '123-456-7890', roleId: 3 },
+    { id: 6, fullName: 'Agent Y', email: 'agentY@example.com', password: 'secret', phone: '234-567-8901', roleId: 3 },
+    { id: 7, fullName: 'Agent Z', email: 'agentZ@example.com', password: 'secret', phone: '345-678-9012', roleId: 3 },
+    { id: 8, fullName: 'Agent W', email: 'agentW@example.com', password: 'secret', phone: '456-789-0123', roleId: 3 },
+    { id: 9, fullName: 'Agent V', email: 'agentV@example.com', password: 'secret', phone: '567-890-1234', roleId: 3 }
+  ];
 
-orderTypes: string[] = ['Preorder', 'Regular Order'];
+  orderTypes: string[] = ['Preorder', 'Regular Order'];
 
-statuses: { [key: string]: string[] } = {
-  'Preorder': ['Pending', 'Approved', 'Cancelled'],
-  'Regular Order': ['Processing', 'Delivered', 'Cancelled']
-};
+  statuses: { [key: string]: string[] } = {
+    'Preorder': ['Pending', 'Approved', 'Cancelled'],
+    'Regular Order': ['Processing', 'Delivered', 'Cancelled']
+  };
   ngOnInit() {
     this.fetchOrders();
     this.fetchProducts();
@@ -121,25 +123,24 @@ statuses: { [key: string]: string[] } = {
       order.orderType.toLowerCase().includes(term) ||
       order.totalAmount.toString().includes(term)
     );
-    
+
   }
 
 
 
-openAddOrderDialog() {
-  const dialogRef = this.dialog.open(OrderDialogComponent, {
-    width: '600px',
-    maxWidth: '90vw',
-    data: { 
-      products: this.products, 
-      customers: this.customers, 
-      agents: this.agents
-    }
-  });
+  openAddOrderDialog() {
+    const dialogRef = this.dialog.open(OrderDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: {
+        products: this.products,
+        customers: this.customers,
+        agents: this.agents
+      }
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.updateStockQuantity(result.items);
         const orderItems = this.addOrderItems(result.orderId, result.items);
 
         const newOrder: Order = {
@@ -158,7 +159,7 @@ openAddOrderDialog() {
             console.log('Order added successfully:', order);
             this.orders.push(order);
             this.filteredOrders = [...this.orders];
-            this.applyFilter(); 
+            this.applyFilter();
           },
           (error) => {
             console.error('Failed to add order:', error);
@@ -169,39 +170,32 @@ openAddOrderDialog() {
     });
   }
 
-addOrderItems(orderId: number, items: { productId: number; quantity: number }[]): OrderItem[] {
-  const orderItems: OrderItem[] = [];
+  addOrderItems(orderId: number, items: { productId: number; quantity: number }[]): OrderItem[] {
+    const orderItems: OrderItem[] = [];
 
-  items.forEach(item => {
-    const product = this.products.find(p => p.productId === item.productId);
-    if (product) {
-      const unitPrice = product.price * 1.15; // 15% markup snapshot
-
-      const newOrderItem: OrderItem = {
-        orderId: orderId,
-        productId: item.productId,
-        quantity: item.quantity,
-        unitPrice: unitPrice,
-        totalPrice: item.quantity * unitPrice
-      };
-
-      orderItems.push(newOrderItem);
-    }
-  });
-
-  return orderItems;
-}
-
-
-
-  updateStockQuantity(items: { productId: number; quantity: number }[]) {
     items.forEach(item => {
       const product = this.products.find(p => p.productId === item.productId);
       if (product) {
-        product.stockQuantity -= item.quantity;
+        const unitPrice = product.price * 1.15; // 15% markup snapshot
+
+        const newOrderItem: OrderItem = {
+          orderId: orderId,
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: unitPrice,
+          totalPrice: item.quantity * unitPrice
+        };
+
+        orderItems.push(newOrderItem);
       }
     });
+
+    return orderItems;
   }
+
+
+
+
 
 
   deleteOrder(order: Order) {
@@ -217,19 +211,26 @@ addOrderItems(orderId: number, items: { productId: number; quantity: number }[])
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        // User confirmed deletion
         this.performDelete(order);
       }
     });
   }
 
   performDelete(order: Order) {
-    const index = this.orders.findIndex(o => o.orderId === order.orderId);
-    if (index !== -1) {
-      this.orders.splice(index, 1);
-      this.applyFilter();
-    }
+    this.inventoryManagementService.deleteOrder(order).subscribe({
+      next: (response) => {
+        console.log('Order deleted successfully', response);
+        this.orders = this.orders.filter(o => o.orderId !== order.orderId);
+        this.filteredOrders = [...this.orders];
+      },
+      error: (err) => {
+        console.error('Failed to delete order', err);
+      }
+    });
   }
+
+
+
   isExpanded(element: Order) {
     return this.expandedElement === element;
   }
@@ -238,28 +239,83 @@ addOrderItems(orderId: number, items: { productId: number; quantity: number }[])
     this.expandedElement = this.isExpanded(element) ? null : element;
   }
 
- editOrderItem(item: OrderItem) {
-  const dialogRef = this.dialog.open(OrderItemDialogComponent, {
-    width: '600px',
-    maxWidth: '90vw',
-    data: { 
-      products: this.products,  
-      OrderItem : item                
-    }
-  });
-
+  editOrderItem(item: OrderItem) {
+    const oldQuantityValue = item.quantity;
+    const dialogRef = this.dialog.open(OrderItemDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: {
+        products: this.products,
+        orderItem: item
+      }
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Handle the updated order item here
-        console.log('Updated order item:', result);
+        const updatedItem: OrderItem = {
+          orderItemId: item.orderItemId,
+          productId: result.product_id,
+          quantity: result.quantity,
+          unitPrice: result.unit_price,
+          orderId: item.orderId,
+          totalPrice: 0 // backend will recalc
+        };
+        console.log("udated item", updatedItem);
+
+        this.inventoryManagementService.updateOrderItem(updatedItem).subscribe({
+          next: (response) => {
+            console.log('Order item updated successfully', response);
+
+            const orderIndex = this.orders.findIndex(o => o.orderId === updatedItem.orderId);
+            if (orderIndex !== -1) {
+              const itemIndex = this.orders[orderIndex].orderItems.findIndex(oi => oi.orderItemId === updatedItem.orderItemId);
+              if (itemIndex !== -1) {
+                this.orders[orderIndex].orderItems[itemIndex] = response;
+                this.orders = [...this.orders];
+                this.orders[orderIndex].orderItems = [...this.orders[orderIndex].orderItems];
+                if (this.orders[orderIndex].orderType === 'Regular Order' &&
+                  this.orders[orderIndex].status === 'Processing') {
+
+                  const updatedOrder = this.orders[orderIndex];
+                  const updatedOrderItem = updatedOrder.orderItems[itemIndex];
+
+                  // Calculate difference
+                  const quantityDiff = updatedOrderItem.quantity - oldQuantityValue;
+
+                  // Adjust product stock directly
+                  const product = this.products.find(p => p.productId === updatedOrderItem.productId);
+                  if (product) {
+                    const newStock = product.stockQuantity - quantityDiff;
+
+                    if (newStock < 0) {
+                      console.warn(`Insufficient stock for product ${product.productId}. Available: ${product.stockQuantity}, requested: ${updatedOrderItem.quantity}`);
+                    } else {
+                      product.stockQuantity = newStock;
+
+                      // Persist to backend
+                      this.inventoryManagementService.updateProduct(product).subscribe({
+                        next: (res) => console.log("Product stock updated:", res),
+                        error: (err) => console.error("Failed to update product stock", err)
+                      });
+                    }
+                  }
+                }
+
+              }
+            }
+          },
+          error: (err) => {
+            console.error('Failed to update order item', err);
+          }
+        });
       }
-    }); 
+    });
   }
 
-  cancelOrder(order : Order){
 
-  }
+
+  
+
 
 
 
@@ -277,48 +333,146 @@ addOrderItems(orderId: number, items: { productId: number; quantity: number }[])
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        // User confirmed deletion
-     //   this.performDeleteOrderItem(item);
-        
+        this.performDeleteOrderItem(item);
+
       }
     });
   }
 
-  // performDeleteOrderItem(item: OrderItem) {
-  //   const index = this.orderItems.findIndex(oi => oi.orderItemId === item.orderItemId);
-  //   if (index !== -1) {
-  //     this.orderItems.splice(index, 1);
-  //     this.applyFilter();
-  //   }
-  // }
+ performDeleteOrderItem(item: OrderItem) {
+  this.inventoryManagementService.deleteOrderItem(item).subscribe({
+    next: () => {
+      console.log('Order item deleted successfully');
 
-  approveOrder(order: Order) {
-    if(order.orderType === 'Preorder'){
-      order.orderType = 'Regular Order';
-      order.status = 'Processing';
-    } 
-    this.inventoryManagementService.updateOrderStatusAndType(order).subscribe(
-      (response) => {
-        console.log('Order status and type updated successfully:', response);
-        const index = this.orders.findIndex(o => o.orderId === order.orderId);      
-        if (index !== -1) { 
-          this.orders[index] = response;
-          this.filteredOrders = [...this.orders];
+      const orderIndex = this.orders.findIndex(o => o.orderId === item.orderId);
+      if (orderIndex !== -1) {
+        // Restore stock if it's a Regular Order in Processing/Completed state
+        const order = this.orders[orderIndex];
+        if (order.orderType === 'Regular Order' && order.status === 'Processing') {
+          const product = this.products.find(p => p.productId === item.productId);
+
+          if (product) {
+            product.stockQuantity += item.quantity;
+
+            // Persist stock update
+            this.inventoryManagementService.updateProduct(product).subscribe({
+              next: (res) => console.log("Stock restored after item deletion:", res),
+              error: (err) => console.error("Failed to restore stock", err)
+            });
+          } else {
+            console.warn(`Product with ID ${item.productId} not found.`);
+          }
         }
-        this.applyFilter(); 
-      },
-      (error) => {
-        console.error('Failed to update order status and type:', error);
+
+        // Remove item from order
+        this.orders[orderIndex].orderItems =
+          this.orders[orderIndex].orderItems.filter(oi => oi.orderItemId !== item.orderItemId);
+
+        if (this.orders[orderIndex].orderItems.length === 0) {
+          this.orders.splice(orderIndex, 1);
+        }
+
+        this.orders = [...this.orders];
+        this.filteredOrders = [...this.orders];
       }
-    );
-    
+    },
+    error: (err) => {
+      console.error('Failed to delete order item', err);
+    }
+  });
+}
+
+
+approveOrder(order: Order) {
+  this.updateQuantities(order, 'approve');
+}
+
+cancelOrder(order: Order) {
+  this.updateQuantities(order, 'cancel');
+}
+
+
+updateQuantities(order: Order, action: 'approve' | 'cancel') {
+  const updateRequests = [];
+
+  for (let orderItem of order.orderItems) {
+    const product = this.products.find(p => p.productId === orderItem.productId);
+
+    if (!product) {
+      console.error(`Product with ID ${orderItem.productId} not found.`);
+      continue;
+    }
+
+    if (action === 'approve' && order.orderType === 'Preorder') {
+      // For Preorder → Regular Order approval, reduce stock
+      const newQuantity = product.stockQuantity - orderItem.quantity;
+
+      if (newQuantity < 0) {
+        alert(`Insufficient stock for product ${orderItem.productId}. Available: ${product.stockQuantity}, requested: ${orderItem.quantity}`);
+        return false; // stop approval
+      }
+
+      product.stockQuantity = newQuantity;
+      updateRequests.push(this.inventoryManagementService.updateProduct(product));
+    } 
+    else if (action === 'cancel' && order.orderType === 'Regular Order') {
+      // Restore stock for cancelled regular orders
+      product.stockQuantity += orderItem.quantity;
+      updateRequests.push(this.inventoryManagementService.updateProduct(product));
+    }
   }
+
+  if (updateRequests.length > 0) {
+    forkJoin(updateRequests).subscribe({
+      next: (responses) => {
+        console.log('Stock updated successfully:', responses);
+
+        // After stock update, update order status/type
+        if (action === 'approve') {
+          order.orderType = 'Regular Order';
+          order.status = 'Processing';
+        } else if (action === 'cancel') {
+          order.status = 'Cancelled';
+        }
+
+        this.inventoryManagementService.updateOrderStatusAndType(order).subscribe({
+          next: (response) => console.log(`Order ${action}d successfully:`, response),
+          error: (err) => console.error(`Error updating order after ${action}:`, err)
+        });
+      },
+      error: (err) => {
+        console.error('Error updating product stock:', err);
+      }
+    });
+  } else {
+    // No stock updates needed (e.g., Preorder cancel)
+    if (action === 'cancel' && order.orderType === 'Preorder') {
+      order.status = 'Cancelled';
+      this.inventoryManagementService.updateOrderStatusAndType(order).subscribe({
+        next: (response) => console.log('Preorder cancelled successfully:', response),
+        error: (err) => console.error('Error cancelling preorder:', err)
+      });
+    }
+  }
+
+  return true;
+}
+
+
+
+ 
+
+
+
+
+
+
 
   fetchProducts() {
     this.inventoryManagementService.getProducts().subscribe(
       (response) => {
         console.log('Products fetched successfully:', response);
-        this.products = response;
+        this.products = [...response];
 
       },
       (error) => {
@@ -338,6 +492,14 @@ addOrderItems(orderId: number, items: { productId: number; quantity: number }[])
         console.error('Failed to fetch orders:', error);
       }
     );
+  }
+
+  fetchCustomers() {
+
+  }
+
+  fetchUsers() {
+
   }
 }
 

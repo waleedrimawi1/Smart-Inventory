@@ -42,6 +42,11 @@ export interface OrderDialogData {
   customers: Customer[];
   agents: User[];
 }
+export interface OrderItemDialogData{
+    products: Product[];
+    orderItem : OrderItem;
+
+}
 
 
 

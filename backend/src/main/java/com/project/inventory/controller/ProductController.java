@@ -42,7 +42,6 @@ public class ProductController {
     @PostMapping("/addProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO) {
         try {
-            System.out.println("Received productDTO: " + productDTO);
             ProductDTO productDTO1 = productService.addProduct(productDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(productDTO1);
         } catch (RuntimeException e) {

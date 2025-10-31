@@ -35,7 +35,7 @@ public class ProductMapper {
             productDTO.setSupplierId(product.getSupplier().getSupplierId());
         } else {
             productDTO.setSupplierId(null);  // Or another default value if required
-        }        logger.info("Received productDTO 2: {}", productDTO.toString());
+        }
 
 
         return productDTO;

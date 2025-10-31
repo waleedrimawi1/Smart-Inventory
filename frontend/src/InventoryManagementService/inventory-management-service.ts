@@ -61,4 +61,19 @@ updateOrderStatusAndType(order : Order): Observable<Order> {
     return this.inventoryManagementApi.updateOrderStatusAndType(order);
   }
 
+deleteOrder(order : Order) :Observable<any> {
+  return this.inventoryManagementApi.deleteOrder(order);
+}
+
+updateOrderItem(orderItem : OrderItem) : Observable<OrderItem> {
+  return this.inventoryManagementApi.updateOrderItem(orderItem);
+}
+
+deleteOrderItem(orderItem : OrderItem) : Observable<void> {
+  return this.inventoryManagementApi.deleteOrderItem(orderItem);
+}
+
+updateStockQuantities(order : Order) : Observable<Order> {
+    return this.inventoryManagementApi.updateStockQuantities(order);
+}
 }

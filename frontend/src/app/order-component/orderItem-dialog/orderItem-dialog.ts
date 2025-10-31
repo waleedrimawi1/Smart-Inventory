@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { Product, OrderItem } from '../../../models';
+import { Product, OrderItem,OrderItemDialogData } from '../../../models';
 
 @Component({
   selector: 'app-order-item-dialog',
@@ -36,7 +36,7 @@ export class OrderItemDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<OrderItemDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: OrderItemDialogData
   ) {
     this.products = data.products;
     this.orderItem = data.orderItem;

@@ -36,7 +36,7 @@ public class Order {
     @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
 
     @Column(name = "created_at")
@@ -102,5 +102,22 @@ public class Order {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", customer=" + customer +
+                ", agent=" + agent +
+                ", orderDate=" + orderDate +
+                ", deliveryDate=" + deliveryDate +
+                ", status='" + status + '\'' +
+                ", orderType='" + orderType + '\'' +
+                ", totalAmount=" + totalAmount +
+                ", orderItems=" + orderItems +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

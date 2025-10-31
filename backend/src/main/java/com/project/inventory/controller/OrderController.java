@@ -4,8 +4,11 @@ import com.project.inventory.dto.OrderDTO;
 import com.project.inventory.dto.OrderItemDTO;
 import com.project.inventory.dto.ProductDTO;
 import com.project.inventory.services.OrderService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +21,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class OrderController {
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
     public OrderController(OrderService orderService) {
@@ -69,6 +72,65 @@ public class OrderController {
                     .body(Map.of("error", "An unexpected error occurred"));
         }
     }
+
+    @DeleteMapping("/deleteOrder")
+    public ResponseEntity<?> deleteOrderById(@RequestBody OrderDTO orderDTO) {
+        try {
+            boolean deleted = orderService.deleteOrderById(orderDTO.getOrderId());
+
+            if (deleted) {
+                return ResponseEntity.ok(Map.of("message", "Order deleted successfully"));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Order not found"));
+            }
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Cannot delete order because of related records"));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred"));
+        }
+    }
+
+    @PutMapping("/updateOrderItem")
+    public ResponseEntity<?> updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+        try {
+            OrderItemDTO updatedOrderItem = orderService.updateOrderItem(orderItemDTO);
+
+            return ResponseEntity.ok(updatedOrderItem);
+        } catch (RuntimeException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred"));
+        }
+
+
+    }
+    @DeleteMapping("/deleteOrderItem")
+    public ResponseEntity<?> deleteOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+        try {
+            orderService.deleteOrderItem(orderItemDTO);
+            return ResponseEntity.ok(Map.of("message", "Order item deleted successfully"));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Unexpected error"));
+        }
+    }
+
+
+
+
+
+
+
 
 
 

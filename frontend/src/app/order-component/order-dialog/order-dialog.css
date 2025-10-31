@@ -1,37 +1,8 @@
-mat-dialog-content {
-  padding: 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-mat-dialog-actions {
-  padding: 16px 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-h2[mat-dialog-title] {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #244BC5;
-  margin: 0 0 16px 0;
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .product-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between; /* keeps info left and input right */
+  gap: 16px; /* spacing between info and field */
   padding: 10px 12px;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -39,6 +10,7 @@ h2[mat-dialog-title] {
 }
 
 .product-info {
+  flex: 1; /* take available space */
   display: flex;
   flex-direction: column;
 }
@@ -54,38 +26,17 @@ h2[mat-dialog-title] {
   color: #777;
 }
 
-.mat-mdc-form-field-label-wrapper {
-  padding-top: 0 !important;
-}
-
-.mat-mdc-text-field-wrapper {
-  padding-top: 0 !important;
-}
-
-.full-width {
-  width: 100%;
-  max-width: 400px;
-}
-
 .quantity-field {
+  flex-shrink: 0; /* prevent shrinking */
   width: 120px;
 }
-
-.quantity-field .mat-mdc-text-field-wrapper {
-  width: 100%;
+.no-products {
+  padding: 16px;
+  text-align: center;
+  color: #d32f2f; /* error red */
 }
 
-.quantity-field input.mat-mdc-input-element {
-  width: 100%;
-}
-
-@media (max-width: 600px) {
-  .quantity-field {
-    width: 80px;
-  }
-}
-
-.form-row mat-form-field {
-  width: 100%;
-  max-width: 400px;
+.custom-width {
+  width: 1000px !important; 
+  max-width: 90% !important;
 }
