@@ -1,30 +1,41 @@
 package com.project.inventory.services;
 
+import com.project.inventory.controller.ProductController;
 import com.project.inventory.dto.OrderDTO;
 import com.project.inventory.dto.OrderItemDTO;
 import com.project.inventory.entity.*;
 import com.project.inventory.mapper.OrderMapper;
+import com.project.inventory.mapper.OrderItemMapper;
 import com.project.inventory.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional // applies to all methods in this class
 @Service
 public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository, CustomerRepository customerRepository) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository, CustomerRepository customerRepository, OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     public List<OrderDTO> getOrders() {
@@ -88,6 +99,54 @@ public class OrderService {
 
         return OrderMapper.toDTO(order);
     }
+
+    public Boolean deleteOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        orderRepository.delete(order);
+        return true;
+    }
+
+    public OrderItemDTO updateOrderItem(OrderItemDTO orderItemDTO){
+        OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getOrderItemId())
+                .orElseThrow(() -> new RuntimeException("OrderItem not found"));
+
+        Product product = productRepository.findById(orderItemDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Order order = orderRepository.findById(orderItemDTO.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        logger.info("Order ID: {}", order.getOrderId());
+
+        orderItem.setProduct(product);
+        orderItem.setOrder(order);
+        orderItem.setQuantity(orderItemDTO.getQuantity());
+        orderItem.setUnitPrice(orderItemDTO.getUnitPrice());
+        orderItem.setTotalPrice(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())));
+        orderItemRepository.save(orderItem);
+
+        return OrderItemMapper.toDTO(orderItem);
+
+    }
+
+    public void deleteOrderItem(OrderItemDTO orderItemDTO) {
+        OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getOrderItemId())
+                .orElseThrow(() -> new RuntimeException("OrderItem not found"));
+
+        Order order = orderItem.getOrder();
+
+        orderItemRepository.delete(orderItem);
+
+        if (order.getOrderItems().isEmpty()) {
+            orderRepository.delete(order);
+        }
+    }
+
+
+
+
+
 
 
 }

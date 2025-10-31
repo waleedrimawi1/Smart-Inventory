@@ -20,6 +20,7 @@ export class AuthService {
     return localStorage.getItem('role') || ''; 
   }
 
+
   logout() {
     localStorage.removeItem('user');
     localStorage.removeItem('role');
