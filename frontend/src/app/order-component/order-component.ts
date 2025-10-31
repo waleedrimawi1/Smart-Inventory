@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from '../dashboard/dashboard';
 import { OrderDialogComponent } from './order-dialog/order-dialog';
-import { ConfirmDialogComponent } from '../supplier/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog';
 import { OrderItemDialogComponent } from './orderItem-dialog/orderItem-dialog';
 import { CdkTableModule } from '@angular/cdk/table';
 import { trigger, state, style, animate, transition } from '@angular/animations';
