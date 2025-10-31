@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CanActivateFn } from '@angular/router';
 
-import { managerGuard } from './manager-guard';
+import { ManagerGuard } from './manager-guard';
 
 describe('managerGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) => 
-      TestBed.runInInjectionContext(() => managerGuard(...guardParameters));
+      TestBed.runInInjectionContext(() => ManagerGuard(...guardParameters));
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

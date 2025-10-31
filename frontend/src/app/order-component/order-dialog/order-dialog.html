@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>
+  <mat-icon>add_business</mat-icon>
+  {{ 'Add New Order' }}
+</h2>
+
+<mat-dialog-content [formGroup]="orderForm">
+<div class="form-row">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Select Customer</mat-label>
+    <mat-select formControlName="customerId" required>
+      <mat-option *ngFor="let customer of customers" [value]="customer.customerId">
+        {{ customer.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="form-row">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Select Agent</mat-label>
+    <mat-select formControlName="agentId" required>
+      <mat-option *ngFor="let agent of agents" [value]="agent.id">
+        {{ agent.fullName }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+  
+  <!-- Products List -->
+  <div class="form-group">
+    <label class="form-label">Products</label>
+    <div *ngFor="let product of products; let i = index" class="product-row">
+      <span>{{ product.name }} (Available: {{ product.stockQuantity }})</span>
+      <mat-form-field appearance="outline" class="quantity-field">
+        <input matInput type="number" [formControl]="getQuantityControl(i)" placeholder="Quantity" min="1"
+          [max]="product.stockQuantity">
+        <mat-error *ngIf="getQuantityControl(i).hasError('required')">
+          Quantity required
+        </mat-error>
+        <mat-error *ngIf="getQuantityControl(i).hasError('max')">
+          Cannot exceed available quantity
+        </mat-error>
+        <mat-error *ngIf="getQuantityControl(i).hasError('min')">
+          Quantity must be at least 1
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!orderForm.valid">
+    <mat-icon>add</mat-icon>
+    Add Order
+  </button>
+</mat-dialog-actions>

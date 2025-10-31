@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { InventoryManagementApi } from '../InventoryManagementApi/inventory-management-api';
-import { Product } from '../models';
+import { Product,Order, OrderItem } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -48,5 +48,17 @@ export class InventoryManagementService {
       );
     }
   }
-  
+
+  getOrders(): Observable<Order[]> {
+    return this.inventoryManagementApi.getOrders();
+  }
+
+  addOrder(order: Order): Observable<Order> {
+    return this.inventoryManagementApi.addOrder(order); 
+  }
+
+updateOrderStatusAndType(order : Order): Observable<Order> {
+    return this.inventoryManagementApi.updateOrderStatusAndType(order);
+  }
+
 }

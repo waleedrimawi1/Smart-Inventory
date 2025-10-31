@@ -1,0 +1,153 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
+<div class="main-layout">
+    <app-dashboard></app-dashboard>
+
+    <div class="table-container">
+        <div class="search-container">
+            <mat-form-field appearance="outline" class="search-field">
+                <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()"
+                    placeholder="Search order by orderId, customerId, status...">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" class="add-button" (click)="openAddOrderDialog()">
+                <mat-icon>add</mat-icon>
+                Add Order
+            </button>
+        </div>
+        <table mat-table [dataSource]="filteredOrders" multiTemplateDataRows>
+
+            <!-- Dynamic columns -->
+            @for (column of columnsToDisplay; track column) {
+            <ng-container [matColumnDef]="column">
+                <th mat-header-cell *matHeaderCellDef>{{ columnLabels[column] }}</th>
+                <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
+            </ng-container>
+
+
+            }
+            <ng-container matColumnDef="totalAmount">
+                <th mat-header-cell *matHeaderCellDef>Total Amount</th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.totalAmount | currency:'USD':'symbol' }}
+                </td>
+            </ng-container>
+
+
+<ng-container matColumnDef="approve">
+  <th mat-header-cell *matHeaderCellDef class="approve-header">Approve Or Reject</th>
+  <td mat-cell *matCellDef="let element" class="approve-cell">
+
+    <!-- Show Approve button only if it's still a preorder pending -->
+    <button *ngIf="element.orderType === 'Preorder' && element.status === 'Pending'"
+            mat-icon-button color="primary" matTooltip="Approve order"
+            (click)="approveOrder(element); $event.stopPropagation()">
+      <mat-icon>check_circle</mat-icon>
+    </button>
+
+    <!-- Show Cancel button if the order can be cancelled -->
+    <button *ngIf="element.status !== 'Cancelled'"
+            mat-icon-button color="warn" matTooltip="Cancel order"
+            (click)="cancelOrder(element); $event.stopPropagation()">
+      <mat-icon>cancel</mat-icon>
+    </button>
+
+  </td>
+</ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+                <td mat-cell *matCellDef="let element" class="actions-cell">
+                    <!-- Delete button -->
+                    <button mat-icon-button color="warn" matTooltip="Delete order"
+                        (click)="deleteOrder(element); $event.stopPropagation()">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+
+                    <!-- Expand/Collapse button -->
+                    <button mat-icon-button aria-label="expand row" (click)="toggle(element); $event.stopPropagation()"
+                        class="example-toggle-button" [class.example-toggle-button-expanded]="isExpanded(element)">
+                        <mat-icon>
+                            {{ expandedElement === element ? 'expand_less' : 'expand_more' }}
+                        </mat-icon>
+                    </button>
+
+                </td>
+            </ng-container>
+
+
+
+
+            <!-- Expanded Detail Column -->
+            <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+                    @if (isExpanded(element)) {
+                    <div class="example-element-detail-wrapper example-element-detail-wrapper-expanded">
+                        <div class="example-element-order-items">
+                            <h3>Order Items for Order ID: {{ element.orderId }}</h3>
+
+                            <table mat-table class="expandedTable" [dataSource]="element.orderItems">
+                                <ng-container matColumnDef="orderItem_id">
+                                    <th mat-header-cell *matHeaderCellDef>orderItem ID</th>
+                                    <td mat-cell *matCellDef="let item">{{ item.orderItemId }}</td>
+                                </ng-container>
+                                <ng-container matColumnDef="product_id">
+                                    <th mat-header-cell *matHeaderCellDef>Product ID</th>
+                                    <td mat-cell *matCellDef="let item">{{ item.productId }}</td>
+                                </ng-container>
+                                export interface OrderItem
+                                <ng-container matColumnDef="quantity">
+                                    <th mat-header-cell *matHeaderCellDef>Quantity</th>
+                                    <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="unit_price">
+                                    <th mat-header-cell *matHeaderCellDef>Unit Price</th>
+                                    <td mat-cell *matCellDef="let item">{{ item.unitPrice | currency }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="total_price">
+                                    <th mat-header-cell *matHeaderCellDef>Total Price</th>
+                                    <td mat-cell *matCellDef="let item">{{ item.totalPrice | currency }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+                                    <td mat-cell *matCellDef="let item" class="actions-cell">
+                                        <button mat-icon-button color="primary" matTooltip="Edit order item"
+                                            (click)="editOrderItem(item)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button color="warn" matTooltip="Delete order item"
+                                            (click)="deleteOrderItem(item)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="orderItemDisplayedColumns"></tr>
+                                <tr mat-row *matRowDef="let item; columns: orderItemDisplayedColumns;"></tr>
+                            </table>
+                        </div>
+                    </div>
+                    }
+                </td>
+            </ng-container>
+
+            <!-- Header Row -->
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+
+            <!-- Data Row -->
+            <tr mat-row *matRowDef="let row; columns: columnsToDisplayWithExpand" class="example-element-row"
+                [class.example-expanded-row]="isExpanded(row)" (click)="toggle(row)">
+            </tr>
+
+            <!-- Expanded Detail Row -->
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row">
+            </tr>
+        </table>

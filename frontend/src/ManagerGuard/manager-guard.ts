@@ -24,8 +24,6 @@ export class ManagerGuard implements CanActivate {
       return true;
     }
     
-    // Redirect non-manager users
-    this.router.navigate(['/dashboard']);
     return false;
   }
 

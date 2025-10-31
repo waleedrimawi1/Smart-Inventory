@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                 // Step 3: Define which URLs need authentication
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - anyone can access
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/login","/api/orders/**").permitAll()
 
                         // Protected endpoints - only MANAGER and ADMIN
                         .requestMatchers("/api/users/**","/api/products/**","/api/suppliers/**","/api/customers/**").hasAnyRole("MANAGER", "ADMIN")
