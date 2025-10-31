@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from '../dashboard/dashboard';
 import { AddSupplierDialogComponent } from './add-supplier-dialog/add-supplier-dialog';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/confirm-dialog.component';
 import { SupplierApiService } from '../services/supplier-api.service';
 
 export interface SupplierData {

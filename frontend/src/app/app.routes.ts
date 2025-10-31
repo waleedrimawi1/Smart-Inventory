@@ -4,12 +4,14 @@ import { ManagerGuard } from '../ManagerGuard/manager-guard';
 import { DashboardComponent } from './dashboard/dashboard';
 import { ProductComponent } from './product-component/product-component';
 import { Supplier } from './supplier/supplier';
+import { CustomerComponent } from './customer/customer';
 import { LoginComponent } from './login-component/login-component';
-import { AddUserComponent } from '../app/add-user/add-user';  
 import { authGuard } from '../AuthGuard/auth-guard';  
 import { PreordersComponent } from '../app/preorders/preorders';
 import { AgentGuard } from '../AgentGuard/agent-guard';
-import { OrderComponent } from '../app/order-component/order-component' // Adjust the import path if needed
+import { AdminGuard } from '../AdminGuard/admin-guard';
+import { UserManagementComponent } from './user-management/user-management';
+
 export const routes: Routes = [
   {
     path: '',
@@ -34,11 +36,21 @@ export const routes: Routes = [
     component: Supplier,
     canActivate: [ManagerGuard],
   },
-   {path: 'orders',
-    component: OrderComponent,
-    canActivate: [ManagerGuard]
+  {
+    path: 'customers',
+    component: CustomerComponent,
+    canActivate: [ManagerGuard],
+  },
+   { path: 'agent/preorders',
+    component: PreordersComponent,
+    canActivate: [authGuard, AgentGuard]
   },
   
+  {
+    path: 'users',
+    component: UserManagementComponent,
+    canActivate: [ManagerGuard],
+  },
   {
     path: '**', 
     redirectTo: '/unauthorized',  

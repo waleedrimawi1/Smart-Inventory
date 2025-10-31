@@ -71,24 +71,27 @@ public class UserController {
         }
     }
     
-    @PutMapping("/{id}/role")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> updateUserRole(@PathVariable Long id,
-                                          @RequestBody Map<String, String> request) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id,
+                                      @RequestBody Map<String, String> request) {
         try {
-            RoleEnum newRole = RoleEnum.valueOf(request.get("role").toUpperCase());
-            User updatedUser = userService.updateUserRole(id, newRole);
+            String fullName = request.get("fullName");
+            String email = request.get("email");
+            String phone = request.get("phone");
+            RoleEnum roleEnum = RoleEnum.valueOf(request.get("role").toUpperCase());
+            
+            User updatedUser = userService.updateUser(id, fullName, email, phone, roleEnum);
             
             return ResponseEntity.ok(Map.of(
-                "message", "User role updated successfully",
-                "userId", updatedUser.getId(),
-                "newRole", updatedUser.getRole().getName().toString()
+                "message", "User updated successfully",
+                "userId", updatedUser.getId()
             ));
             
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Role update failed"));
+            return ResponseEntity.badRequest().body(Map.of("error", "User update failed"));
         }
     }
     

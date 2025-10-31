@@ -1,7 +1,7 @@
 package com.project.inventory.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,16 +9,17 @@ import java.time.LocalDateTime;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("customer_id")
     private Long customerId;
 
     @Column(nullable = false)
     private String name;
-
+    
     private String phone;
     private String address;
-
-    @Column(name = "current_balance", precision = 10, scale = 2)
-    private BigDecimal currentBalance = BigDecimal.ZERO;
+    
+    @Column(name = "current_balance")
+    private Double currentBalance;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -29,11 +30,11 @@ public class Customer {
     // Constructors
     public Customer() {}
 
-    public Customer(String name, String phone, String address) {
+    public Customer(String name, String phone, String address, Double currentBalance) {
         this.name = name;
         this.phone = phone;
         this.address = address;
-        this.currentBalance = BigDecimal.ZERO;
+        this.currentBalance = currentBalance;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -51,8 +52,8 @@ public class Customer {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public BigDecimal getCurrentBalance() { return currentBalance; }
-    public void setCurrentBalance(BigDecimal currentBalance) { this.currentBalance = currentBalance; }
+    public Double getCurrentBalance() { return currentBalance; }
+    public void setCurrentBalance(Double currentBalance) { this.currentBalance = currentBalance; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
